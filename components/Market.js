@@ -1,5 +1,5 @@
 import React from 'react';
-import {Trader, Order} from "./Trader.js"
+import {Trader, Order} from "../modules/Trader.js"
 
 export default class Market extends React.Component {
 
