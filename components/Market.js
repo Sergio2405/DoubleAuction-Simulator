@@ -1,5 +1,6 @@
 import React from 'react';
-import {Trader, Order} from "../modules/Trader.js"
+import {Trader, Order} from "../modules/Trader.js";
+import {Environment, Screen, Table, TraderList, MarketOrders, ManualOrders, MarketStatistics} from './Styles';
 
 export default class Market extends React.Component {
 
@@ -94,20 +95,20 @@ export default class Market extends React.Component {
 
     render() {
         return (
-            <div className = "auction-environment">
-                <div className = "auction-traders-list">
-                    <button onClick = {() => this.matchTrades()}>Match Orders</button>
-                </div> 
-                <div className = "auction-market-screen">
-                    <div className = "auction-market-orders">
-                        <table>
+            <Environment>
+                <TraderList>
+                    <button onClick = {() => this.matchTrades()}>Match Orders</button> 
+                </TraderList>
+                <Screen>
+                    <MarketOrders>
+                        <Table>
                             <thead>
                                 <tr>
-                                    <td>Order ID</td>
-                                    <td>Player ID</td>
-                                    <td>Type</td>
-                                    <td>Quantity</td>
-                                    <td>Price</td> 
+                                    <th>Order ID</th>
+                                    <th>Player ID</th>
+                                    <th>Type</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th> 
                                 </tr>
                             </thead>
                             <tbody>
@@ -125,17 +126,16 @@ export default class Market extends React.Component {
                                     )
                                 })}
                             </tbody>
-                        </table>
-                    </div>
-                    <div className = "auction-manual-orders">
-                        <div className = "auction-introduce-manual-order">
+                        </Table>
+                    </MarketOrders>
+                    <ManualOrders>
                             <form onSubmit = {this.handleManualTraderSubmit}>
-                                <table style = {{"width": "100%"}}>
+                                <Table>
                                     <thead>
                                         <tr>
-                                            <td>Type</td>
-                                            <td>Quantity</td>
-                                            <td>Price</td>
+                                            <th>Type</th>
+                                            <th>Quantity</th>
+                                            <th>Price</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -158,19 +158,17 @@ export default class Market extends React.Component {
                                             </td>
                                         </tr>
                                     </tbody>
-                                </table>
+                                </Table>
                                 <button style = {{"width": "100%"}}> Place Order </button>
                             </form>
-                        </div>
-                        <div className = "auction-list-manual-orders">
-                            <table style = {{"width": "100%"}}>
+                            <Table>
                                 <thead>
                                     <tr>
-                                        <td>Order ID</td>
-                                        <td>Player ID</td>
-                                        <td>Type</td>
-                                        <td>Quantity</td>
-                                        <td>Price</td>
+                                        <th>Order ID</th>
+                                        <th>Player ID</th>
+                                        <th>Type</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -187,18 +185,17 @@ export default class Market extends React.Component {
                                         )
                                     })}
                                 </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div className = "auction-market-statistics">
-                        <table>
+                            </Table>
+                    </ManualOrders>
+                    <MarketStatistics>
+                        <Table>
                             <thead>
                                 <tr>
-                                    <td>Player ID</td>
-                                    <td>Risk Aversion</td>
-                                    <td>Loss Aversion</td>
-                                    <td>Buy</td>
-                                    <td>Sell</td>
+                                    <th>Player ID</th>
+                                    <th>Risk Aversion</th>
+                                    <th>Loss Aversion</th>
+                                    <th>Buy</th>
+                                    <th>Sell</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -214,10 +211,10 @@ export default class Market extends React.Component {
                                     )
                                 })}
                             </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+                        </Table>
+                    </MarketStatistics>  
+                </Screen>
+            </Environment>
         )
     }
 }

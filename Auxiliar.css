@@ -1,0 +1,8 @@
+th, td { 
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+tr:hover {
+    background-color:rgb(202, 202, 202)
+}
