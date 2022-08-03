@@ -1,5 +1,4 @@
 import Market from './components/Market'
-import './Auxiliar.css';
 
 function App() {
   return (

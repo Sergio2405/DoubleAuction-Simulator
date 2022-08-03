@@ -1,6 +1,6 @@
 import React from 'react';
 import {Trader, Order} from "../modules/Trader.js";
-import {Environment, Screen, Table, TraderList, MarketOrders, ManualOrders, MarketStatistics} from './Styles';
+import {Environment, Screen, Table, TraderList, MarketOrders, ManualOrders, MarketStatistics, OrderFormat} from './Styles';
 
 export default class Market extends React.Component {
 
@@ -103,7 +103,7 @@ export default class Market extends React.Component {
                     <MarketOrders>
                         <Table>
                             <thead>
-                                <tr>
+                                <tr style = {{border: "1px solid black",borderCollapse: "collapse"}}>
                                     <th>Order ID</th>
                                     <th>Player ID</th>
                                     <th>Type</th>
@@ -113,16 +113,14 @@ export default class Market extends React.Component {
                             </thead>
                             <tbody>
                                 {this.state.orders_placed.map((order,index) => {
-                                    let background_color = order.type == "Buy" ? "green" : "red";
-                                    let display = order.active ? "" : "hidden";
                                     return ( 
-                                    <tr key = {index} hidden = {display}>
+                                    <OrderFormat key = {index} type = {order.type} display = {order.active}>
                                         <td>{order.id}</td>
                                         <td>{order.trader}</td>
-                                        <td style = {{backgroundColor : background_color}}>{order.type}</td>
+                                        <td className = "order_type">{order.type}</td>
                                         <td>{order.quantity}</td>
                                         <td>{order.price}</td>
-                                    </tr>
+                                    </OrderFormat>
                                     )
                                 })}
                             </tbody>
@@ -132,7 +130,7 @@ export default class Market extends React.Component {
                             <form onSubmit = {this.handleManualTraderSubmit}>
                                 <Table>
                                     <thead>
-                                        <tr>
+                                        <tr style = {{border: "1px solid black",borderCollapse: "collapse"}}>
                                             <th>Type</th>
                                             <th>Quantity</th>
                                             <th>Price</th>
@@ -163,7 +161,7 @@ export default class Market extends React.Component {
                             </form>
                             <Table>
                                 <thead>
-                                    <tr>
+                                    <tr style = {{border: "1px solid black",borderCollapse: "collapse"}}>
                                         <th>Order ID</th>
                                         <th>Player ID</th>
                                         <th>Type</th>
@@ -173,15 +171,14 @@ export default class Market extends React.Component {
                                 </thead>
                                 <tbody>
                                     {this.state.orders_placed_manual.map((order,index) => {
-                                        let background_color = order.type == "Buy" ? "green" : "red";
                                         return ( 
-                                            <tr key = {index}>
-                                            <td>{order.id}</td>
-                                            <td>{order.trader}</td>
-                                            <td style = {{backgroundColor : background_color}}>{order.type}</td>
-                                            <td>{order.quantity}</td>
-                                            <td>{order.price}</td>
-                                        </tr>
+                                            <OrderFormat key = {index}>
+                                                <td>{order.id}</td>
+                                                <td>{order.trader}</td>
+                                                <td className = "order_type">{order.type}</td>
+                                                <td>{order.quantity}</td>
+                                                <td>{order.price}</td>
+                                            </OrderFormat>                          
                                         )
                                     })}
                                 </tbody>
@@ -190,7 +187,7 @@ export default class Market extends React.Component {
                     <MarketStatistics>
                         <Table>
                             <thead>
-                                <tr>
+                                <tr style = {{border: "1px solid black",borderCollapse: "collapse"}}>
                                     <th>Player ID</th>
                                     <th>Risk Aversion</th>
                                     <th>Loss Aversion</th>

@@ -12,6 +12,11 @@ export const Screen = styled.div`
 	justify-content: center;
 	height: 300px;
 	width: 1500px;
+
+    th, td { 
+        border: 1px solid black;
+        border-collapse: collapse;
+    };
 `
 
 export const TraderList = styled.div`
@@ -33,6 +38,18 @@ export const ManualOrders = styled.div`
 export const MarketStatistics = styled.div`
     height : 100%;
     width : 100%
+`
+
+export const OrderFormat = styled.tr` 
+
+    &:hover {
+        background-color:rgb(202, 202, 202)
+    };
+
+    .order_type { 
+      background-color : ${(props) => {return props.type == "Buy" ? `green` : `red`}}  
+    }
+    
 `
 
 export const Table = styled.table`
