@@ -12,13 +12,13 @@ export default class Market extends React.Component {
                 new Trader({id:1,risk_aversion:26,loss_aversion:9})],
             "orders_placed" : [],
             "selectChange" : true,
-            "orders_placed_manual": []
+            "orders_placed_manual": [],
+            "session_state" : "Start",
+            "interval" : 0
         }
     }
 
     placeTraderOrder = (trader, type) => { 
-
-        console.log("Placing trade", type)
 
         let key_order = this.state.orders_placed.length
         trader.createOrder({
@@ -67,6 +67,7 @@ export default class Market extends React.Component {
         })
 
         for (let order of orders_placed) { 
+
             if (order.type == "Buy") { 
                 let sell_orders_sorted = sell_orders.sort((order1,order2) => { 
                     return order1.price - order2.price;
@@ -79,8 +80,7 @@ export default class Market extends React.Component {
                 let issuer;
                 for (let trader in this.state.traders){if (trader.id == min_sell_order.trader){issuer = trader; break}}
 
-                console.log("issuer : ", issuer)
-                console.log("issuer : ", min_sell_order)
+                console.log("order matched : ", min_sell_order)
 
                 min_sell_order.hideOrder();
                 orders_placed[index] = min_sell_order;
@@ -93,11 +93,31 @@ export default class Market extends React.Component {
         }
     }
 
+    startSimulation(active) {
+
+        if (active){ 
+
+            let interval = setInterval(() => this.matchTrades(),1000);
+            this.setState({"interval" : interval})
+            this.setState({"session_state" : "Stop"})
+
+        }else{
+            
+            clearInterval(this.state.interval)
+            this.setState({"session_state" : "Start"});
+        }
+    }
+
     render() {
         return (
             <Environment>
                 <TraderList>
-                    <button onClick = {() => this.matchTrades()}>Match Orders</button> 
+                    <button onClick = {() => 
+                        {let session_state = this.state.session_state == "Start" ? true : false; ;
+                        this.startSimulation(session_state)}} 
+                        style = {{backgroundColor : this.state.session_state == "Start" ? "#7CB9E8" : "#fd5c63"}}>
+                        {this.state.session_state}
+                    </button> 
                 </TraderList>
                 <Screen>
                     <MarketOrders>
@@ -114,7 +134,7 @@ export default class Market extends React.Component {
                             <tbody>
                                 {this.state.orders_placed.map((order,index) => {
                                     return ( 
-                                    <OrderFormat key = {index} type = {order.type} display = {order.active}>
+                                    <OrderFormat key = {index} type = {order.type} hidden = {!order.active}>
                                         <td>{order.id}</td>
                                         <td>{order.trader}</td>
                                         <td className = "order_type">{order.type}</td>
@@ -172,7 +192,7 @@ export default class Market extends React.Component {
                                 <tbody>
                                     {this.state.orders_placed_manual.map((order,index) => {
                                         return ( 
-                                            <OrderFormat key = {index}>
+                                            <OrderFormat key = {index} type = {order.type} hidden = {!order.active}>
                                                 <td>{order.id}</td>
                                                 <td>{order.trader}</td>
                                                 <td className = "order_type">{order.type}</td>

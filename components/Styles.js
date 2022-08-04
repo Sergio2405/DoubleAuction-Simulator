@@ -2,7 +2,8 @@ import styled from 'styled-components'
 
 export const Environment = styled.div`
     display: flex;
-    flex-direction: column
+    flex-direction: column;
+    font-family: "Times New Roman", Times, serif;
 `
 
 export const Screen = styled.div`
