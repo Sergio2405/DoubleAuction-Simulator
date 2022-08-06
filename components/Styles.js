@@ -21,7 +21,7 @@ export const Screen = styled.div`
 `
 
 export const TraderList = styled.div`
-    border: 1px solid red;
+    
 `
 
 export const MarketOrders = styled.div`

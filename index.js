@@ -1,6 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
+import Market from './components/Market'
+
+function App() {
+  return (
+    <div className="App">
+      <Market />
+    </div>
+  );
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

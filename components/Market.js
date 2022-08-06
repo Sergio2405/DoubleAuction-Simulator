@@ -1,44 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {Trader, Order} from "../modules/Trader.js";
 import {Environment, Screen, Table, TraderList, MarketOrders, ManualOrders, MarketStatistics, OrderFormat} from './Styles';
 
-export default class Market extends React.Component {
+export default function Market() {
 
-    constructor(props) {
-        super(props)
-        this.duration = 0
-        this.state = {
-            "traders" : [ new Trader({id:0,risk_aversion:26,loss_aversion:9}),
-                new Trader({id:1,risk_aversion:26,loss_aversion:9})],
-            "orders_placed" : [],
-            "selectChange" : true,
-            "orders_placed_manual": [],
-            "session_state" : "Start",
-            "interval" : 0
-        }
-    }
+    const [traders, setTraders] = useState([]);
+    const [orders, setOrders] = useState([]);
+    const [ordersAdmin, setOrdersAdmin] = useState([]);
+    const [sessionState, setSessionState] = useState("Start");
+    const [marketInterval, setMarketInterval] = useState(0);
+    const [selectChange, setSelectChange] = useState(true);
 
-    placeTraderOrder = (trader, type) => { 
-
-        let key_order = this.state.orders_placed.length
-        trader.createOrder({
-            id: key_order,
-			type : type,
-			quantity : 54,
-			price : 21,
-        })
-
-        let order = trader.placeOrder()
-        this.state.orders_placed.push(order)
-        this.setState({
-            "orders_placed": this.state.orders_placed,
-        })
-    }
-
-    handleManualTraderSubmit = (event) => {
+    function handleManualTraderSubmit(event) {
 
         event.preventDefault() 
-        let key_order = this.state.orders_placed.length
+        let key_order = traders.length
         let manual_order =  new Order({
             id : key_order,
             type : event.target.order_type.value,
@@ -47,20 +23,20 @@ export default class Market extends React.Component {
             trader : "admin",
         })
             
-        this.state.orders_placed.push(manual_order)
-        this.state.orders_placed_manual.push(manual_order)
+        let [ordersAux, ordersAdminAux] = [[...orders], [...ordersAdmin]]
 
-        this.setState({
-            "orders_placed": this.state.orders_placed,
-            "orders_placed_manual" : this.state.orders_placed_manual
-        })
+        ordersAux.push(manual_order)
+        ordersAdminAux.push(manual_order)
+
+        setOrders(ordersAux);
+        setOrdersAdmin(ordersAdminAux)
     }
 
-    matchTrades = () => {
+    function matchTrades() {
 
         console.log("Matching Orders....")
 
-        let orders_placed = [...this.state.orders_placed];
+        let orders_placed = [...orders];
 
         let sell_orders = orders_placed.filter((order) => { 
             return order.type == "Sell"
@@ -78,14 +54,14 @@ export default class Market extends React.Component {
                 let index = orders_placed.indexOf(min_sell_order);
             
                 let issuer;
-                for (let trader in this.state.traders){if (trader.id == min_sell_order.trader){issuer = trader; break}}
+                for (let trader in traders){if (trader.id == min_sell_order.trader){issuer = trader; break}}
 
                 console.log("order matched : ", min_sell_order)
 
                 min_sell_order.hideOrder();
                 orders_placed[index] = min_sell_order;
 
-                this.setState({orders_placed : orders_placed})
+                setOrders(orders_placed)
 
                 // let buy_quantity = Math.min(order.quantit,min_sell_order.quantity)
                 // let volume = buy_quantity * min_sell_order.price
@@ -93,34 +69,129 @@ export default class Market extends React.Component {
         }
     }
 
-    startSimulation(active) {
+    function placeTraderOrder(trader, type) { 
+
+        let key_order = traders.length
+        trader.createOrder({
+            id: key_order,
+			type : type,
+			quantity : 54,
+			price : 21,
+        })
+
+        let order = trader.placeOrder()
+        let ordersAux = [...orders]
+
+        ordersAux.push(order)
+        setOrders(ordersAux)
+    }
+
+    function activateTraders(activate) { 
+
+        const websocket = new WebSocket("ws://localhost:8001/");
+
+        websocket.onopen = () => {
+           websocket.send(JSON.stringify({"message":"Iniciando Servidor..."})); 
+        }
+        
+        websocket.addEventListener("message", ({ data }) => {
+            console.log("Mensaje del servidor : ", data)
+          });
+        
+        // if (activate) { 
+        //     let traders = [...this.state.traders];
+        //     traders.forEach((trader) => {
+        //         trader.activateTrader(true);
+        //         trader.startTrading(websocket)
+        //     })
+        //     this.setState({traders : traders})
+        // } 
+    }
+
+    function startSimulation(active) {
 
         if (active){ 
+            activateTraders(active);
 
-            let interval = setInterval(() => this.matchTrades(),1000);
-            this.setState({"interval" : interval})
-            this.setState({"session_state" : "Stop"})
-
+            let interval = setInterval(() => matchTrades(),1000);
+            setMarketInterval(interval)
+            setSessionState("Stop")
         }else{
-            
-            clearInterval(this.state.interval)
-            this.setState({"session_state" : "Start"});
+            clearInterval(marketInterval)
+            setSessionState("Start")
         }
     }
 
-    render() {
-        return (
-            <Environment>
-                <TraderList>
-                    <button onClick = {() => 
-                        {let session_state = this.state.session_state == "Start" ? true : false; ;
-                        this.startSimulation(session_state)}} 
-                        style = {{backgroundColor : this.state.session_state == "Start" ? "#7CB9E8" : "#fd5c63"}}>
-                        {this.state.session_state}
-                    </button> 
-                </TraderList>
-                <Screen>
-                    <MarketOrders>
+    return (
+        <Environment>
+            <TraderList>
+                <button onClick = {() => 
+                    {let session_state = sessionState == "Start" ? true : false; startSimulation(session_state)}} 
+                    style = {{backgroundColor : sessionState == "Start" ? "#7CB9E8" : "#fd5c63"}}
+                    >
+                    {sessionState}
+                </button> 
+            </TraderList>
+            <Screen>
+                <MarketOrders>
+                    <Table>
+                        <thead>
+                            <tr style = {{border: "1px solid black",borderCollapse: "collapse"}}>
+                                <th>Order ID</th>
+                                <th>Player ID</th>
+                                <th>Type</th>
+                                <th>Quantity</th>
+                                <th>Price</th> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {orders.map((order,index) => {
+                                return ( 
+                                <OrderFormat key = {index} type = {order.type} hidden = {!order.active}>
+                                    <td>{order.id}</td>
+                                    <td>{order.trader}</td>
+                                    <td className = "order_type">{order.type}</td>
+                                    <td>{order.quantity}</td>
+                                    <td>{order.price}</td>
+                                </OrderFormat>
+                                )
+                            })}
+                        </tbody>
+                    </Table>
+                </MarketOrders>
+                <ManualOrders>
+                        <form onSubmit = {handleManualTraderSubmit}>
+                            <Table>
+                                <thead>
+                                    <tr style = {{border: "1px solid black",borderCollapse: "collapse"}}>
+                                        <th>Type</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <select 
+                                            name = "order_type"
+                                            style = { selectChange  ? {"backgroundColor" : "green"} : {"backgroundColor" : "red"}} 
+                                            onChange = {() => setSelectChange(!selectChange)}
+                                            >
+                                                <option value = "Buy">Buy</option>
+                                                <option value = "Sell">Sell</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type = "number" name = "quantity" placeholder = "Specify Quantity"/>
+                                        </td>
+                                        <td>
+                                            <input type = "number" name = "price" placeholder = "Specify Price"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </Table>
+                            <button style = {{"width": "100%"}}> Place Order </button>
+                        </form>
                         <Table>
                             <thead>
                                 <tr style = {{border: "1px solid black",borderCollapse: "collapse"}}>
@@ -128,110 +199,53 @@ export default class Market extends React.Component {
                                     <th>Player ID</th>
                                     <th>Type</th>
                                     <th>Quantity</th>
-                                    <th>Price</th> 
+                                    <th>Price</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {this.state.orders_placed.map((order,index) => {
+                                {ordersAdmin.map((order,index) => {
                                     return ( 
-                                    <OrderFormat key = {index} type = {order.type} hidden = {!order.active}>
-                                        <td>{order.id}</td>
-                                        <td>{order.trader}</td>
-                                        <td className = "order_type">{order.type}</td>
-                                        <td>{order.quantity}</td>
-                                        <td>{order.price}</td>
-                                    </OrderFormat>
+                                        <OrderFormat key = {index} type = {order.type} hidden = {!order.active}>
+                                            <td>{order.id}</td>
+                                            <td>{order.trader}</td>
+                                            <td className = "order_type">{order.type}</td>
+                                            <td>{order.quantity}</td>
+                                            <td>{order.price}</td>
+                                        </OrderFormat>                          
                                     )
                                 })}
                             </tbody>
                         </Table>
-                    </MarketOrders>
-                    <ManualOrders>
-                            <form onSubmit = {this.handleManualTraderSubmit}>
-                                <Table>
-                                    <thead>
-                                        <tr style = {{border: "1px solid black",borderCollapse: "collapse"}}>
-                                            <th>Type</th>
-                                            <th>Quantity</th>
-                                            <th>Price</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <select 
-                                                name = "order_type"
-                                                style = { this.state.selectChange  ? {"backgroundColor" : "green"} : {"backgroundColor" : "red"}} 
-                                                onChange = {() => this.setState({"selectChange" : !this.state.selectChange})}
-                                                >
-                                                    <option value = "Buy">Buy</option>
-                                                    <option value = "Sell">Sell</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input type = "number" name = "quantity" placeholder = "Specify Quantity"/>
-                                            </td>
-                                            <td>
-                                                <input type = "number" name = "price" placeholder = "Specify Price"/>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </Table>
-                                <button style = {{"width": "100%"}}> Place Order </button>
-                            </form>
-                            <Table>
-                                <thead>
-                                    <tr style = {{border: "1px solid black",borderCollapse: "collapse"}}>
-                                        <th>Order ID</th>
-                                        <th>Player ID</th>
-                                        <th>Type</th>
-                                        <th>Quantity</th>
-                                        <th>Price</th>
+                </ManualOrders>
+                <MarketStatistics>
+                    <Table>
+                        <thead>
+                            <tr style = {{border: "1px solid black",borderCollapse: "collapse"}}>
+                                <th>Player ID</th>
+                                <th>Risk Aversion</th>
+                                <th>Loss Aversion</th>
+                                <th>Buy</th>
+                                <th>Sell</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {traders.map((trader,index) => {
+                                return ( 
+                                    <tr key = {index}>
+                                        <td>{trader.id}</td>
+                                        <td>{trader.risk_aversion}</td>
+                                        <td>{trader.loss_aversion}</td>
+                                        <td><button type = "button" style = {{ backgroundColor: "green"}} onClick = {() => placeTraderOrder(trader,"Buy")}>B</button></td>
+                                        <td><button type = "button" style = {{ backgroundColor: "red"}} onClick = {() => placeTraderOrder(trader,"Sell")}>S</button></td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {this.state.orders_placed_manual.map((order,index) => {
-                                        return ( 
-                                            <OrderFormat key = {index} type = {order.type} hidden = {!order.active}>
-                                                <td>{order.id}</td>
-                                                <td>{order.trader}</td>
-                                                <td className = "order_type">{order.type}</td>
-                                                <td>{order.quantity}</td>
-                                                <td>{order.price}</td>
-                                            </OrderFormat>                          
-                                        )
-                                    })}
-                                </tbody>
-                            </Table>
-                    </ManualOrders>
-                    <MarketStatistics>
-                        <Table>
-                            <thead>
-                                <tr style = {{border: "1px solid black",borderCollapse: "collapse"}}>
-                                    <th>Player ID</th>
-                                    <th>Risk Aversion</th>
-                                    <th>Loss Aversion</th>
-                                    <th>Buy</th>
-                                    <th>Sell</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {this.state.traders.map((trader,index) => {
-                                    return ( 
-                                        <tr key = {index}>
-                                            <td>{trader.id}</td>
-                                            <td>{trader.risk_aversion}</td>
-                                            <td>{trader.loss_aversion}</td>
-                                            <td><button type = "button" style = {{ backgroundColor: "green"}} onClick = {() => this.placeTraderOrder(trader,"Buy")}>B</button></td>
-                                            <td><button type = "button" style = {{ backgroundColor: "red"}} onClick = {() => this.placeTraderOrder(trader,"Sell")}>S</button></td>
-                                        </tr>
-                                    )
-                                })}
-                            </tbody>
-                        </Table>
-                    </MarketStatistics>  
-                </Screen>
-            </Environment>
-        )
-    }
+                                )
+                            })}
+                        </tbody>
+                    </Table>
+                </MarketStatistics>  
+            </Screen>
+        </Environment>
+    )
+    
+
 }
