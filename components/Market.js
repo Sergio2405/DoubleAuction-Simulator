@@ -1,17 +1,126 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {Trader, Order} from "../modules/Trader.js";
 import {Environment, Screen, Table, TraderList, MarketOrders, ManualOrders, MarketStatistics, OrderFormat} from './Styles';
 
 export default function Market() {
 
-    const [traders, setTraders] = useState([]);
+    const [traders, setTraders] = useState([new Trader({id:0,risk_aversion:90,loss_aversion:8,bot:true})]);
     const [orders, setOrders] = useState([]);
     const [ordersAdmin, setOrdersAdmin] = useState([]);
+
     const [sessionState, setSessionState] = useState("Start");
-    const [marketInterval, setMarketInterval] = useState(0);
     const [selectChange, setSelectChange] = useState(true);
 
-    function handleManualTraderSubmit(event) {
+    const [marketInterval, setMarketInterval] = useState(0);
+    const [websocket,setWebsocket] = useState(0)
+
+    const [order,setOrder] = useState(0)
+
+    useEffect(() => {
+
+        if (sessionState == "Stop"){
+            console.log('Starting websocket')
+            let websocket = new WebSocket("ws://localhost:8001/")
+            setWebsocket(websocket)
+        }else{
+            if (websocket != 0){
+                websocket.close()
+            }
+        }
+      }, [sessionState])
+
+    useEffect(() => {
+
+        if (websocket != 0){
+            websocket.addEventListener("message", ({ data }) => {
+                console.log("Order received",data)
+                setOrder(data)
+            });
+
+            websocket.onopen = () => {
+                setWebsocket(websocket)
+                console.log("Guardando websocket")
+
+                let interval = setInterval(() => matchTrades(orders),1000);
+                setMarketInterval(interval)
+                setSessionState("Stop")
+
+                activateTraders(true,websocket);
+            }
+        }
+    }, [websocket])
+
+    useEffect(() => {
+
+        console.log(orders)
+        if (order != 0){
+            let ordersAux = [...orders]
+            ordersAux.push(JSON.parse(order))
+            setOrders(ordersAux)  
+        }
+
+    }, [order])
+
+    const  startSimulation = (active) => {
+
+        if (active){ 
+
+            console.log("Activating market")
+            setSessionState("Stop")
+            
+        }else{
+
+            console.log("Cerrando market")
+            clearInterval(marketInterval)
+
+            let websocketAux = websocket
+            activateTraders(active, websocketAux)
+            websocketAux.close()
+            setWebsocket(websocketAux)
+
+            setSessionState("Start")
+        }
+    }
+
+    const activateTraders = (active,websocket) => { 
+
+        if (active) { 
+            console.log("Activando traders")
+
+            let tradersAux = [...traders];
+            tradersAux.forEach((trader) => {
+                trader.activateTrader(true);
+                trader.startTrading(websocket)
+            })
+
+            setTraders(tradersAux)
+        }else{
+            let tradersAux = [...traders];
+            tradersAux.forEach((trader) => {
+                trader.activateTrader(false);
+                trader.startTrading(websocket)
+            })
+        }
+    }
+
+    const placeTraderOrder = (trader, type) => { 
+
+        let key_order = traders.length
+        trader.createOrder({
+            id: key_order,
+			type : type,
+			quantity : 54,
+			price : 21,
+        })
+        trader.placeOrder(websocket)
+        let order = trader.getOrders().slice(-1)[0]
+        let ordersAux = [...orders]
+
+        ordersAux.push(order)
+        setOrders(ordersAux)
+    }
+
+    const handleManualTraderSubmit = (event) => {
 
         event.preventDefault() 
         let key_order = traders.length
@@ -30,96 +139,6 @@ export default function Market() {
 
         setOrders(ordersAux);
         setOrdersAdmin(ordersAdminAux)
-    }
-
-    function matchTrades() {
-
-        console.log("Matching Orders....")
-
-        let orders_placed = [...orders];
-
-        let sell_orders = orders_placed.filter((order) => { 
-            return order.type == "Sell"
-        })
-
-        for (let order of orders_placed) { 
-
-            if (order.type == "Buy") { 
-                let sell_orders_sorted = sell_orders.sort((order1,order2) => { 
-                    return order1.price - order2.price;
-                })
-
-                let min_sell_order = sell_orders_sorted[0];
-
-                let index = orders_placed.indexOf(min_sell_order);
-            
-                let issuer;
-                for (let trader in traders){if (trader.id == min_sell_order.trader){issuer = trader; break}}
-
-                console.log("order matched : ", min_sell_order)
-
-                min_sell_order.hideOrder();
-                orders_placed[index] = min_sell_order;
-
-                setOrders(orders_placed)
-
-                // let buy_quantity = Math.min(order.quantit,min_sell_order.quantity)
-                // let volume = buy_quantity * min_sell_order.price
-            }
-        }
-    }
-
-    function placeTraderOrder(trader, type) { 
-
-        let key_order = traders.length
-        trader.createOrder({
-            id: key_order,
-			type : type,
-			quantity : 54,
-			price : 21,
-        })
-
-        let order = trader.placeOrder()
-        let ordersAux = [...orders]
-
-        ordersAux.push(order)
-        setOrders(ordersAux)
-    }
-
-    function activateTraders(activate) { 
-
-        const websocket = new WebSocket("ws://localhost:8001/");
-
-        websocket.onopen = () => {
-           websocket.send(JSON.stringify({"message":"Iniciando Servidor..."})); 
-        }
-        
-        websocket.addEventListener("message", ({ data }) => {
-            console.log("Mensaje del servidor : ", data)
-          });
-        
-        // if (activate) { 
-        //     let traders = [...this.state.traders];
-        //     traders.forEach((trader) => {
-        //         trader.activateTrader(true);
-        //         trader.startTrading(websocket)
-        //     })
-        //     this.setState({traders : traders})
-        // } 
-    }
-
-    function startSimulation(active) {
-
-        if (active){ 
-            activateTraders(active);
-
-            let interval = setInterval(() => matchTrades(),1000);
-            setMarketInterval(interval)
-            setSessionState("Stop")
-        }else{
-            clearInterval(marketInterval)
-            setSessionState("Start")
-        }
     }
 
     return (

@@ -12,17 +12,20 @@ export class Trader{
 
     startTrading(websocket) { 
 
-        if (this.active){
+        if ((this.active) && (websocket.readyState != 3)){
+            console.log("Empezando a tradear")
             this.interval = setInterval(() => {
+                console.log("Dentro de trader interval")
                 this.createOrder({
                     type : "Buy",
-                    quantity : 54,
-                    price : 21,
+                    quantity : Math.random()*45,
+                    price : Math.random()*21,
                 });
                 this.placeOrder(websocket)
-            },2000)  
+            },5000)  
         }else{
             clearInterval(this.interval)
+            console.log("Cerrando trader interval")
         }
     }
 
@@ -36,8 +39,6 @@ export class Trader{
             trader : this.id
         })
 
-        console.log("Trader ${this.id}", order_to_place)
-
         this.updateOrders(order_to_place)
     }
 
@@ -46,8 +47,17 @@ export class Trader{
     }
 
     placeOrder(websocket) { 
-        console.log("Placing order")
-        return this.my_orders.slice(-1)[0] // get recent order
+
+        let order_to_place = new Order({
+			type : "Buy",
+			quantity : Math.random()*45,
+			price : Math.random()*12,
+            active : true,
+            trader : this.id
+        })
+
+        websocket.send(JSON.stringify(order_to_place))
+        console.log("Trader ${this.id} send to server: ", order_to_place)
     }
 
     getOrders() { 
