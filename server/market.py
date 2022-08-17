@@ -1,10 +1,24 @@
 from collections import deque
+import json
 
 class Market(): 
 
     def __init__(self): 
         self.buy_limit_orders = deque()
         self.sell_limit_orders = deque()
+
+    def addOrder(self, order):
+
+        order = json.loads(order)
+
+        if order["type"] == "Buy":
+
+            print("buy ", self.buy_limit_orders)
+            self.buy_limit_orders.append(order)
+        else:
+
+            print("sell ", self.sell_limit_orders)
+            self.sell_limit_orders.append(order)
 
     def findMinSellPrice(self):
         n_orders = len(self.sell_limit_orders)
@@ -73,6 +87,14 @@ class Market():
                 "quantity" : quantity_match, #increment units of asset,
                 "holdings" : quantity_match * price_match
             }
+
+        transaction = {
+            "id" : 0,
+            "limit" : trader_limit,
+            "market" : trader_market
+        }
+
+        return json.dumps(transaction)
 
 if __name__ == "__main__":
     

@@ -11,7 +11,6 @@ export default function Market() {
     const [sessionState, setSessionState] = useState("Start");
     const [selectChange, setSelectChange] = useState(true);
 
-    const [marketInterval, setMarketInterval] = useState(0);
     const [websocket,setWebsocket] = useState(0)
 
     const [order,setOrder] = useState(0)
@@ -41,10 +40,7 @@ export default function Market() {
                 setWebsocket(websocket)
                 console.log("Guardando websocket")
 
-                let interval = setInterval(() => matchTrades(orders),1000);
-                setMarketInterval(interval)
                 setSessionState("Stop")
-
                 activateTraders(true,websocket);
             }
         }
@@ -71,7 +67,6 @@ export default function Market() {
         }else{
 
             console.log("Cerrando market")
-            clearInterval(marketInterval)
 
             let websocketAux = websocket
             activateTraders(active, websocketAux)
