@@ -61,7 +61,7 @@ export default function Market() {
 
     }, [order])
 
-    const  startSimulation = (active) => {
+    const startSimulation = (active) => {
 
         if (active){ 
 
@@ -101,23 +101,6 @@ export default function Market() {
                 trader.startTrading(websocket)
             })
         }
-    }
-
-    const placeTraderOrder = (trader, type) => { 
-
-        let key_order = traders.length
-        trader.createOrder({
-            id: key_order,
-			type : type,
-			quantity : 54,
-			price : 21,
-        })
-        trader.placeOrder(websocket)
-        let order = trader.getOrders().slice(-1)[0]
-        let ordersAux = [...orders]
-
-        ordersAux.push(order)
-        setOrders(ordersAux)
     }
 
     const handleManualTraderSubmit = (event) => {
@@ -235,36 +218,8 @@ export default function Market() {
                                 })}
                             </tbody>
                         </Table>
-                </ManualOrders>
-                <MarketStatistics>
-                    <Table>
-                        <thead>
-                            <tr style = {{border: "1px solid black",borderCollapse: "collapse"}}>
-                                <th>Player ID</th>
-                                <th>Risk Aversion</th>
-                                <th>Loss Aversion</th>
-                                <th>Buy</th>
-                                <th>Sell</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {traders.map((trader,index) => {
-                                return ( 
-                                    <tr key = {index}>
-                                        <td>{trader.id}</td>
-                                        <td>{trader.risk_aversion}</td>
-                                        <td>{trader.loss_aversion}</td>
-                                        <td><button type = "button" style = {{ backgroundColor: "green"}} onClick = {() => placeTraderOrder(trader,"Buy")}>B</button></td>
-                                        <td><button type = "button" style = {{ backgroundColor: "red"}} onClick = {() => placeTraderOrder(trader,"Sell")}>S</button></td>
-                                    </tr>
-                                )
-                            })}
-                        </tbody>
-                    </Table>
-                </MarketStatistics>  
+                </ManualOrders> 
             </Screen>
         </Environment>
     )
-    
-
 }
