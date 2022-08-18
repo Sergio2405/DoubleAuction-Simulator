@@ -4,25 +4,33 @@ import json
 
 from market import Market
 
-async def handler(websocket):
+async def exchange(websocket):
 
     market = Market()
 
     async for order in websocket: # receive from front
-        market.addOrder(order)
 
-        buy_limit = market.buy_limit_orders
-        sell_limit = market.sell_limit_orders
+        response = {}
+        order = json.loads(order)
+        
+        if order["type"] == "market":
+            if market.emptyMarket(order): 
+                order["active"] = False
+                order["message"] = "Market is empty"
+            else:
+                print("matching")
+                transaction = market.matchTrade(order)
+                response["transaction"] = transaction
+        else:
+            market.addOrder(order)
 
-        response = {
-            "buy_limit" : list(buy_limit),
-            "sell_limit" : list(sell_limit)
-        }
-        await websocket.send(json.dumps(response)) #send back to front
+        print("response -> ",response)
+
+        await websocket.send(json.dumps(response)) # send back to front
         
 async def main():
     print("Market has opened!")
-    async with websockets.serve(handler, "localhost", 8001):
+    async with websockets.serve(exchange, "localhost", 8001):
         await asyncio.Future() 
 
 if __name__ == "__main__":

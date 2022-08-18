@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {Trader, Order} from "../modules/Trader.js";
+import Trader from "../modules/Trader";
+import Order from "../modules/Order";
 import {Environment, Screen, Table, TraderList, MarketOrders, ManualOrders, MarketStatistics, OrderFormat} from './Styles';
 
 export default function Market() {
@@ -32,7 +33,7 @@ export default function Market() {
 
         if (websocket != 0){
             websocket.addEventListener("message", ({ data }) => {
-                console.log("Order received",data)
+                console.log("Server -> ",data)
                 setOrder(data)
             });
 

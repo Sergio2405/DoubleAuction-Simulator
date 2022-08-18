@@ -1,4 +1,6 @@
-export class Trader{
+import Order from "./Order"
+
+export default class Trader{
 
     constructor(props) { 
 		this.id = props.id
@@ -49,7 +51,8 @@ export class Trader{
     placeOrder(websocket) { 
 
         let order_to_place = new Order({
-			type : "Buy",
+			type : "market",
+            action : "buy",
 			quantity : Math.random()*45,
 			price : Math.random()*12,
             active : true,
@@ -66,21 +69,5 @@ export class Trader{
 
     updateOrders(order) { 
         this.my_orders.push(order)
-    }
-}
-
-export class Order{ 
-
-    constructor(props) { 
-        this.id = props.id
-        this.type = props.type
-        this.quantity = props.quantity
-        this.price = props.price
-        this.active = true
-        this.trader = props.trader
-    }
-
-    hideOrder() { 
-        this.active = !this.active
     }
 }
