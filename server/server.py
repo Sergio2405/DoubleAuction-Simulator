@@ -18,13 +18,10 @@ async def exchange(websocket):
                 order["active"] = False
                 order["message"] = "Market is empty"
             else:
-                print("matching")
                 transaction = market.matchTrade(order)
                 response["transaction"] = transaction
         else:
             market.addOrder(order)
-
-        print("response -> ",response)
 
         await websocket.send(json.dumps(response)) # send back to front
         

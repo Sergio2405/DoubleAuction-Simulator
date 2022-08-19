@@ -33,12 +33,8 @@ class Market():
     def addOrder(self, order):
 
         if order["action"] == "Buy":
-
-            print("buy ", self.buy_limit_orders)
             self.buy_limit_orders.append(order)
         else:
-
-            print("sell ", self.sell_limit_orders)
             self.sell_limit_orders.append(order)
 
     def findMinSellPrice(self):

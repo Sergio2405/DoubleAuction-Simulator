@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Trader from "../modules/Trader";
 import Order from "../modules/Order";
-import {Environment, Screen, Table, TraderList, MarketOrders, ManualOrders, MarketStatistics, OrderFormat} from './Styles';
+import {Environment, Screen, Table, TraderList, MarketOrders, ManualOrders, OrderFormat} from './Styles';
 
 const Market =  function() {
 
-    const [traders, setTraders] = useState([new Trader({id:0,risk_aversion:90,loss_aversion:8,bot:true})]);
+    const [traders, setTraders] = useState();
     const [orders, setOrders] = useState([]);
     const [ordersAdmin, setOrdersAdmin] = useState([]);
     const [workers, setWorkers] = useState([])
@@ -63,7 +63,7 @@ const Market =  function() {
         console.log("creating workers")
         let workers = []
         for (let ids = 0; ids <= num; ids ++) { 
-            const worker = new Worker(new URL("./worker.js", import.meta.url));
+            const worker = new Worker(new URL("./workers/worker.js", import.meta.url));
             console.log("worker created ->", worker, ids)
             worker.postMessage({
                 id : ids,
