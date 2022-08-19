@@ -35,7 +35,7 @@ self.addEventListener("message", (e) => {
             break;
     
         case "stop":
-            console.log("Desactivating traders")
+            console.log(`Worker stopped trading`)
             clearInterval(interval)
             break;
     }

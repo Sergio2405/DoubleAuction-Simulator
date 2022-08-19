@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Trader from "../modules/Trader";
 import Order from "../modules/Order";
 import {Environment, Screen, Table, TraderList, MarketOrders, ManualOrders, OrderFormat} from './Styles';
 
-const Market =  function() {
+const Market =  function(props) {
 
-    const [traders, setTraders] = useState();
     const [orders, setOrders] = useState([]);
     const [ordersAdmin, setOrdersAdmin] = useState([]);
     const [workers, setWorkers] = useState([])
@@ -31,72 +29,52 @@ const Market =  function() {
       }, [sessionState])
 
     useEffect(() => {
-
         if (websocket != 0){
-            websocket.addEventListener("message", ({ data }) => {
-                console.log("Server -> ",data)
-                setOrder(data)
-            });
-
             websocket.onopen = () => {
-                setWebsocket(websocket)
-                console.log("Guardando websocket")
-
-                setSessionState("Stop")
-                // activateTraders(true,websocket);
-            }
-        }
+            setWebsocket(websocket)
+            createWorkers(parseInt(props.workers));
+            setSessionState("Stop")
+        }}
     }, [websocket])
 
     useEffect(() => {
-
-        console.log(orders)
-        if (order != 0){
-            let ordersAux = [...orders]
-            ordersAux.push(JSON.parse(order))
-            setOrders(ordersAux)  
-        }
-
+        if (websocket.readyState == 1) {websocket.send(JSON.stringify(order))}
     }, [order])
 
     const createWorkers = (num) => { 
         console.log("creating workers")
+        console.log(websocket)
         let workers = []
         for (let ids = 0; ids <= num; ids ++) { 
-            const worker = new Worker(new URL("./workers/worker.js", import.meta.url));
-            console.log("worker created ->", worker, ids)
+            const worker = new Worker(new URL("../workers/worker.js", import.meta.url));
+            console.log("[WORKER CREATED]", worker, ids)
             worker.postMessage({
                 id : ids,
                 status : "start"
             })
             worker.addEventListener("message", (event) => {
-                console.log(event.data)
+                let order_to_place = event.data
+                if (typeof order_to_place != "string"){setOrder(order_to_place)}
             });
             workers.push(worker);
         }
-
         setWorkers(workers);
     }   
 
     const startSimulation = (active) => {
 
         if (active){ 
-
             console.log("Activating market")
             setSessionState("Stop")
-            createWorkers(2);
-            
         }else{
-
             console.log("Closing market")
 
             workers.forEach((worker) => {
-                worker.postMessage({state : "stop"});
+                worker.postMessage({status : "stop"});
                 worker.terminate()
             })
 
             let websocketAux = websocket
-            activateTraders(active, websocketAux)
             websocketAux.close()
             setWebsocket(websocketAux)
 
@@ -104,31 +82,10 @@ const Market =  function() {
         }
     }
 
-    const activateTraders = (active,websocket) => { 
-
-        if (active) { 
-            console.log("Activando traders")
-
-            let tradersAux = [...traders];
-            tradersAux.forEach((trader) => {
-                trader.activateTrader(true);
-                trader.startTrading(websocket)
-            })
-
-            setTraders(tradersAux)
-        }else{
-            let tradersAux = [...traders];
-            tradersAux.forEach((trader) => {
-                trader.activateTrader(false);
-                trader.startTrading(websocket)
-            })
-        }
-    }
-
     const handleManualTraderSubmit = (event) => {
 
         event.preventDefault() 
-        let key_order = traders.length
+        let key_order = orders.length
         let manual_order =  new Order({
             id : key_order,
             type : event.target.order_type.value,

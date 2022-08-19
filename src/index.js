@@ -5,7 +5,10 @@ import Market from './components/Market'
 function App() {
   return (
     <div className="App">
-      <Market />
+      <Market 
+        duration = "3"
+        workers = "2"
+      />
     </div>
   );
 }
