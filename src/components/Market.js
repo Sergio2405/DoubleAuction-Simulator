@@ -3,11 +3,12 @@ import Trader from "../modules/Trader";
 import Order from "../modules/Order";
 import {Environment, Screen, Table, TraderList, MarketOrders, ManualOrders, MarketStatistics, OrderFormat} from './Styles';
 
-export default function Market() {
+const Market =  function() {
 
     const [traders, setTraders] = useState([new Trader({id:0,risk_aversion:90,loss_aversion:8,bot:true})]);
     const [orders, setOrders] = useState([]);
     const [ordersAdmin, setOrdersAdmin] = useState([]);
+    const [workers, setWorkers] = useState([])
 
     const [sessionState, setSessionState] = useState("Start");
     const [selectChange, setSelectChange] = useState(true);
@@ -42,7 +43,7 @@ export default function Market() {
                 console.log("Guardando websocket")
 
                 setSessionState("Stop")
-                activateTraders(true,websocket);
+                // activateTraders(true,websocket);
             }
         }
     }, [websocket])
@@ -58,16 +59,41 @@ export default function Market() {
 
     }, [order])
 
+    const createWorkers = (num) => { 
+        console.log("creating workers")
+        let workers = []
+        for (let ids = 0; ids <= num; ids ++) { 
+            const worker = new Worker(new URL("./worker.js", import.meta.url));
+            console.log("worker created ->", worker, ids)
+            worker.postMessage({
+                id : ids,
+                status : "start"
+            })
+            worker.addEventListener("message", (event) => {
+                console.log(event.data)
+            });
+            workers.push(worker);
+        }
+
+        setWorkers(workers);
+    }   
+
     const startSimulation = (active) => {
 
         if (active){ 
 
             console.log("Activating market")
             setSessionState("Stop")
+            createWorkers(2);
             
         }else{
 
-            console.log("Cerrando market")
+            console.log("Closing market")
+
+            workers.forEach((worker) => {
+                worker.postMessage({state : "stop"});
+                worker.terminate()
+            })
 
             let websocketAux = websocket
             activateTraders(active, websocketAux)
@@ -219,3 +245,5 @@ export default function Market() {
         </Environment>
     )
 }
+
+export default Market;
