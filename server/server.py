@@ -12,7 +12,6 @@ async def exchange(websocket):
 
         response = {}
         order = json.loads(order)
-        print(order)
         
         if order["type"] == "market":
             if market.emptyMarket(order): 
