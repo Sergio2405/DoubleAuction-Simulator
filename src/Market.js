@@ -7,15 +7,13 @@ import './Market.scss'
 const Market = (props) => {
 
     const [orders, setOrders] = useState([]);
+    const [log, setLogs] = useState([])
     const [workers, setWorkers] = useState([]);
-    const [logs, setLogs] = useState([]);
+    const [workerResponse, setWorkerResponse] = useState([]);
 
     const [sessionState, setSessionState] = useState(false);
 
     const [websocket,setWebsocket] = useState(0);
-
-    const [order,setOrder] = useState(0);
-    const [log, setLog] = useState(0);
 
     useEffect(() => {
         if (sessionState == "Stop"){
@@ -36,16 +34,15 @@ const Market = (props) => {
 
     useEffect(() => { // send order to server
         if (websocket.readyState == 1) {
-            websocket.send(JSON.stringify(order))
-            setOrders(prevOrders => [...prevOrders, order])
+            if (typeof workerResponse != "string"){
+                let order = JSON.stringify(workerResponse)
+                websocket.send(order)
+                setOrders(prevOrders => [...prevOrders, order])
+            }else{
+                setLogs(prevLogs => [...prevLogs, workerResponse])
+            }
         }
-    }, [order])
-
-    useEffect(() => {
-        if (log != 0) {
-            setLogs(prevLogs => [...prevLogs, log])
-        }
-    }, [log])
+    }, [workerResponse])
 
     // creating workers
     const createWorkers = (num) => { 
@@ -59,12 +56,7 @@ const Market = (props) => {
                 status : "start"
             })
             worker.addEventListener("message", (event) => {
-                let worker_response = event.data
-                if (typeof worker_response != "string"){
-                    setOrder(worker_response)
-                }else{
-                    setLog(worker_response)
-                }
+                setWorkerResponse(event.data)
             });
             workers.push(worker);
         }
@@ -89,7 +81,7 @@ const Market = (props) => {
             setSessionState(false)
         }     
     }
-    
+
     const data = [
         {year: 1980, efficiency: 24.3, sales: 8949000},
         {year: 1985, efficiency: 27.6, sales: 10979000},
