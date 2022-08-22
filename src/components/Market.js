@@ -7,7 +7,7 @@ const Market = (props) => {
     const [workers, setWorkers] = useState([]);
     const [logs, setLogs] = useState([]);
 
-    const [sessionState, setSessionState] = useState("Start");
+    const [sessionState, setSessionState] = useState(false);
 
     const [websocket,setWebsocket] = useState(0);
 
@@ -32,11 +32,16 @@ const Market = (props) => {
     }, [websocket])
 
     useEffect(() => { // send order to server
-        if (websocket.readyState == 1) {websocket.send(JSON.stringify(order))}
+        if (websocket.readyState == 1) {
+            websocket.send(JSON.stringify(order))
+            setOrders(prevOrders => [...prevOrders, order])
+        }
     }, [order])
 
     useEffect(() => {
-        if (log != 0) setLogs(logs.push(log))
+        if (log != 0) {
+            setLogs(prevLogs => [...prevLogs, log])
+        }
     }, [log])
 
     // creating workers
@@ -66,10 +71,10 @@ const Market = (props) => {
     // starting simulation
     const startSimulation = (active) => {
 
-        switch (active) { 
+        switch (!active) { 
             case true: 
                 console.log("[ACTIVATING MARKET]")
-                setSessionState("Stop")
+                setSessionState(true)
                 break; 
 
             case false:
@@ -81,21 +86,18 @@ const Market = (props) => {
                 })
     
                 websocket.close()
-                setSessionState("Start")
+                setSessionState(false)
                 break;
         }
     }
 
     return (
         <React.Fragment>
-            <button onClick = {() => 
-                {let session_state = sessionState == "Start" ? true : false; startSimulation(session_state)}} 
-                style = {{backgroundColor : sessionState == "Start" ? "#7CB9E8" : "#fd5c63"}}
-                >
-                {sessionState}
+            <button onClick = {() => startSimulation(sessionState)} style = {{backgroundColor : sessionState ? "#fd5c63" : "#7CB9E8"}}>
+                {!sessionState ? "Start" : "Stop"}
             </button> 
          
-            <Table data = {[{"beba": 90},{"beba": 110}]}/>
+            <Table title = "Statistics" data = {[{"beba": 90},{"beba": 110}]}/>
         </React.Fragment>
     )
 }

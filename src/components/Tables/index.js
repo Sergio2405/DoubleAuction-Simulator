@@ -1,7 +1,8 @@
 import './style.scss'
 
-const Table = ({ data }) => (
+const Table = ({ title , data }) => (
     <table>
+        <caption>{title}</caption>
         <thead>
             <tr>
                 {Object.keys(data[0]).map(label => (
