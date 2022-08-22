@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import Market from './components/Market'
+import Market from './Market'
 
 function App() {
   return (
