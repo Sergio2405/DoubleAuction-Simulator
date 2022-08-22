@@ -42,7 +42,6 @@ const Market = (props) => {
     // creating workers
     const createWorkers = (num) => { 
         console.log("[CREATING WORKERS]")
-        console.log(websocket)
         let workers = []
         for (let ids = 0; ids <= num; ids ++) { 
             const worker = new Worker(new URL("../workers/worker.js", import.meta.url));
