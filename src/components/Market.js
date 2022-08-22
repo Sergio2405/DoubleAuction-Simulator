@@ -39,6 +39,7 @@ const Market = (props) => {
         if (log != 0) setLogs(logs.push(log))
     }, [log])
 
+    // creating workers
     const createWorkers = (num) => { 
         console.log("[CREATING WORKERS]")
         console.log(websocket)
@@ -63,6 +64,7 @@ const Market = (props) => {
         setWorkers(workers);
     }   
 
+    // starting simulation
     const startSimulation = (active) => {
 
         switch (active) { 
@@ -94,7 +96,7 @@ const Market = (props) => {
                 {sessionState}
             </button> 
          
-            <OrdersTable orders = {orders} />
+            <Table data = {orders}/>
         </React.Fragment>
     )
 }

@@ -1,19 +1,24 @@
-const Table = ({  }) => (
+import './styles.scss'
+
+const Table = ({ data }) => (
     <table>
         <thead>
-            <tr style = {{border: "1px solid black",borderCollapse: "collapse"}}>
-                <th>Order ID</th>
-                <th>Player ID</th>
-                <th>Type</th>
-                <th>Action</th>
-                <th>Quantity</th>
-                <th>Price</th> 
+            <tr>
+                {Object.keys(data[0]).map(label => (
+                        <th>{label}</th>
+                    )
+                )}
             </tr>
          </thead>
          <tbody>
-            {orders.map(order => {
-                <Order order = {order}/>
-            })}
+            {data.map(obs => (
+                <tr>
+                    {Object.keys(obs).map(feature => (
+                        <td>{obs[feature]}</td>
+                        )
+                    )}
+                </tr>
+            ))}
          </tbody>
     </table>
 )
