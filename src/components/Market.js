@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Table from './Tables';
 
 const Market = (props) => {
@@ -96,7 +96,7 @@ const Market = (props) => {
                 {sessionState}
             </button> 
          
-            <Table data = {orders}/>
+            <Table data = {[{"beba": 90},{"beba": 110}]}/>
         </React.Fragment>
     )
 }

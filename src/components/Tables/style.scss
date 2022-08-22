@@ -1,6 +1,11 @@
 table {
+    color: black;
+
     th {
-        border: "1px solid black";
-        border-collapse: "collapse";
+        color: white;
+        background-color: black;
+    }                                          
+    tr:nth-child(2n) {
+        background-color: lightgray;
     }
-}
+  }
