@@ -1,5 +1,4 @@
 let interval;
-let websocket;
 
 const createOrder = () => {}
 

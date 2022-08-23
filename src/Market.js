@@ -9,28 +9,24 @@ const Market = (props) => {
     const [orders, setOrders] = useState([]);
     const [log, setLogs] = useState([])
     const [workers, setWorkers] = useState([]);
-    const [workerResponse, setWorkerResponse] = useState([]);
+    const [workerResponse, setWorkerResponse] = useState("");
 
     const [sessionState, setSessionState] = useState(false);
 
-    const [websocket,setWebsocket] = useState(0);
+    const [websocket,setWebsocket] = useState("");
 
     useEffect(() => {
         if (sessionState == "Stop"){
             console.log('[STARTING WEBSOCKET]')
             let websocket = new WebSocket(props.port)
-            setWebsocket(websocket)
+            if (websocket){
+                websocket.onopen = () => {
+                createWorkers(parseInt(props.workers));
+                setSessionState("Stop")
+                setWebsocket(websocket)
+            }}
         }
       }, [sessionState])
-
-    useEffect(() => {
-        if (websocket != 0){
-            websocket.onopen = () => {
-            // setWebsocket(websocket)
-            createWorkers(parseInt(props.workers));
-            setSessionState("Stop")
-        }}
-    }, [websocket])
 
     useEffect(() => { // send order to server
         if (websocket.readyState == 1) {
@@ -44,7 +40,6 @@ const Market = (props) => {
         }
     }, [workerResponse])
 
-    // creating workers
     const createWorkers = (num) => { 
         console.log("[CREATING WORKERS]")
         let workers = []
@@ -63,9 +58,7 @@ const Market = (props) => {
         setWorkers(workers);
     }   
 
-    // starting simulation
     const startSimulation = (active) => {
-
         if (!active) { 
             console.log("[ACTIVATING MARKET]")
             setSessionState(true)
@@ -76,7 +69,6 @@ const Market = (props) => {
                 worker.postMessage({status : "stop"});
                 worker.terminate()
             })
-
             websocket.close()
             setSessionState(false)
         }     
@@ -123,17 +115,9 @@ const Market = (props) => {
             </button> 
 
             <div className = "screen">
-                <Table 
-                key = {1}
-                    title = "Market Statistics" 
-                    data = {[{"id": 90, "Price": 15},{"id": 110,"Price":89}]}
-                />
+                <Table key = {1} title = "Market Statistics" data = {orders}/>
                 <Serie key = {2} title = "Price Serie" data={data} />
-                <Table 
-                key = {3}
-                    title = "Traders" 
-                    data = {[{"beba": 90},{"beba": 110}]}
-                />
+                <Table key = {3} title = "Traders" data = {[{"beba": 90},{"beba": 110}]}/>
                 <Table 
                     key = {4}
                     title = "Logs" 
