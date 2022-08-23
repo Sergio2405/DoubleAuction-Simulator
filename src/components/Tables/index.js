@@ -5,17 +5,17 @@ const Table = ({ title , data }) => (
         <caption>{title}</caption>
         <thead>
             <tr>
-                {Object.keys(data[0]).map(label => (
-                        <th>{label}</th>
+                {Object.keys(data[0]).map((label,i) => (
+                        <th key={i}>{label}</th>
                     )
                 )}
             </tr>
          </thead>
          <tbody>
-            {data.map(obs => (
-                <tr>
-                    {Object.keys(obs).map(feature => (
-                        <td>{obs[feature]}</td>
+            {data.map((obs,j) => (
+                <tr key = {j}>
+                    {Object.keys(obs).map((feature,i) => (
+                        <td key = {i}>{obs[feature]}</td>
                         )
                     )}
                 </tr>

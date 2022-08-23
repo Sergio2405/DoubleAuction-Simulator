@@ -1,0 +1,9 @@
+.Serie {
+    display: flex;
+    flex-direction:column;
+
+    .caption {
+        width: 100%;
+        text-align: center;
+    }
+}
