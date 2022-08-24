@@ -1,5 +1,5 @@
 import { Fragment, useState, useEffect } from 'react';
-import Table from './components/Tables';
+import Table from './components/Table';
 import Serie from './components/Charts/Serie';
 
 import './Market.scss'
@@ -7,26 +7,32 @@ import './Market.scss'
 const Market = (props) => {
 
     const [orders, setOrders] = useState([]);
-    const [log, setLogs] = useState([])
-    const [workers, setWorkers] = useState([]);
+    const [logs, setLogs] = useState([])
+    const [workers, setWorkers] = useState({});
     const [workerResponse, setWorkerResponse] = useState("");
 
     const [sessionState, setSessionState] = useState(false);
-
-    const [websocket,setWebsocket] = useState("");
+    const [serverResponse, setServerResponse] = useState("")
 
     useEffect(() => {
-        if (sessionState == "Stop"){
+        if (sessionState){
+            const websocket = new WebSocket(props.port)
             console.log('[STARTING WEBSOCKET]')
-            let websocket = new WebSocket(props.port)
-            if (websocket){
-                websocket.onopen = () => {
-                createWorkers(parseInt(props.workers));
-                setSessionState("Stop")
-                setWebsocket(websocket)
-            }}
+            websocket.addEventListener("open", function(){
+                createWorkers(parseInt(props.workers))
+            })
+           
+            websocket.addEventListener("message", function({ data }){
+                setServerResponse(data)
+            })
+        }else{
+            websocket.close()
         }
       }, [sessionState])
+
+    useEffect(() => {
+       
+    }, [serverResponse])
 
     useEffect(() => { // send order to server
         if (websocket.readyState == 1) {
@@ -42,7 +48,7 @@ const Market = (props) => {
 
     const createWorkers = (num) => { 
         console.log("[CREATING WORKERS]")
-        let workers = []
+        let workers = {}
         for (let ids = 0; ids <= num; ids ++) { 
             const worker = new Worker(new URL("./workers/worker.js", import.meta.url));
             console.log("[WORKER CREATED]", worker, ids)
@@ -53,7 +59,7 @@ const Market = (props) => {
             worker.addEventListener("message", (event) => {
                 setWorkerResponse(event.data)
             });
-            workers.push(worker);
+            workers[ids] = {quantity : 0, price : 0, holdings : 0};
         }
         setWorkers(workers);
     }   
@@ -69,7 +75,6 @@ const Market = (props) => {
                 worker.postMessage({status : "stop"});
                 worker.terminate()
             })
-            websocket.close()
             setSessionState(false)
         }     
     }
@@ -117,12 +122,8 @@ const Market = (props) => {
             <div className = "screen">
                 <Table key = {1} title = "Market Statistics" data = {orders}/>
                 <Serie key = {2} title = "Price Serie" data={data} />
-                <Table key = {3} title = "Traders" data = {[{"beba": 90},{"beba": 110}]}/>
-                <Table 
-                    key = {4}
-                    title = "Logs" 
-                    data = {[{"log": 90},{"log": 110}]}
-                />
+                <Table key = {3} title = "Traders" data = {workers}/>
+                <Table key = {4} title = "Logs" data = {logs}/>
                 <Serie key = {5} data={data} />
                 <Serie key = {6} data={data} />
             </div>

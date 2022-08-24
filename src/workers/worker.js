@@ -1,20 +1,23 @@
 let interval;
 
-const createOrder = () => {}
-
-const placeOrder = async () => {
-
-    let awaitTime = Math.random()*1000;
-    await new Promise((resolve) => {setTimeout(resolve,awaitTime)}) // "lag"
-    
+const createOrder = () => {
     let order = {
-        type : "market",
-        action : "buy",
+        type : Math.random() > 0.5 ? "market" : "limit" ,
+        action : Math.random() > 0.5 ? "buy" : "sell",
         quantity : Math.random()*45,
         price : Math.random()*12,
         active : true,
         trader : 0
     }
+    return order
+}
+
+const placeOrder = async () => {
+
+    let awaitTime = Math.random()*1000;
+    await new Promise((resolve) => {setTimeout(resolve,awaitTime)}); // "lag"
+    
+    let order = createOrder();
     return order
 }
 
