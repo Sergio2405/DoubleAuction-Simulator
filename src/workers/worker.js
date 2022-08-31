@@ -1,11 +1,15 @@
 let interval;
 
+function Round(number) { 
+    return (Math.round(number)*100)/100
+}
+
 const createOrder = () => {
     let order = {
         type : Math.random() > 0.5 ? "market" : "limit" ,
         action : Math.random() > 0.5 ? "buy" : "sell",
-        quantity : Math.random()*45,
-        price : Math.random()*12,
+        quantity : Round(Math.random()*45),
+        price : Round(Math.random()*12),
         active : true,
         trader : 0
     }

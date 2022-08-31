@@ -10,18 +10,14 @@ async def exchange(websocket):
 
     async for order in websocket: # receive from front
 
-        response = {}
         order = json.loads(order)
-        
+    
         if order["type"] == "market":
-            if market.emptyMarket(order): 
-                order["active"] = False
-                order["message"] = "Market is empty"
-            else:
-                transaction = market.matchTrade(order)
-                response["transaction"] = transaction
+            response = market.matchTrade(order)
         else:
-            market.addOrder(order)
+            response = market.addOrder(order)
+
+        print(response)
 
         await websocket.send(json.dumps(response)) # send back to front
         

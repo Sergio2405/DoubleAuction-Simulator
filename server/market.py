@@ -1,33 +1,15 @@
 from collections import deque
+import logging
 
 class Market(): 
 
     def __init__(self): 
         self.buy_limit_orders = deque()
-        self.sell_limit_orders = deque([{
-			"type" : "limit",
-            "action" : "Sell",
-			"quantity" : 45,
-			"price" : 12,
-            "active" : True,
-            "trader" : 0
-        }, {
-			"type" : "limit",
-            "action" : "Sell",
-			"quantity" : 12,
-			"price" : 5,
-            "active" : True,
-            "trader" : 0
-        }, {
-			"type" : "limit",
-            "action" : "Sell",
-			"quantity" : 7,
-			"price" : 81,
-            "active" : True,
-            "trader" : 0
-        }])
+        self.sell_limit_orders = deque()
         self.transactions = 0
         self.volume = 0
+        self.market_orders = 0
+        self.limit_orders = 0
 
     def emptyMarket(self, order):
         return len(self.sell_limit_orders) == 0 if order["action"] == "buy" else len(self.buy_limit_orders) == 0
@@ -39,10 +21,29 @@ class Market():
         else:
             self.sell_limit_orders.append(order)
 
+        limit_issuer = order["trader"]
+        action = order["action"]
+        quantity = order["quantity"]
+        price = order["price"]
+
+        transaction = {
+                "id" : self.limit_orders,
+                "limit_issuer" : limit_issuer,
+                "action" : action,
+                "volume" : quantity,
+                "price" : price,
+                "log" : f"Trader {limit_issuer} | {action} | {quantity} at {price}",
+                "description" : "order"
+            }
+        
+        self.limit_orders += 1
+
+        return transaction
+
     def findBestOffer(self, order):
         if order["action"] == "buy":
             n_orders = len(self.sell_limit_orders)
-            offer_min = self.sell_limit_orders.popleft() # first value of que
+            offer_min = self.sell_limit_orders.popleft()
             for _ in range(n_orders): 
                 offer = self.sell_limit_orders.popleft() 
                 if offer["price"] < offer_min["price"]:
@@ -53,8 +54,7 @@ class Market():
             return offer_min
         else:
             n_orders = len(self.buy_limit_orders)
-            offer_max = self.buy_limit_orders.popleft() # first value of que
-        
+            offer_max = self.buy_limit_orders.popleft() 
             for _ in range(n_orders): 
                 offer = self.buy_limit_orders.popleft() 
                 if offer.price > offer_max.price:
@@ -62,7 +62,6 @@ class Market():
                     offer_max = offer
                 else:
                     self.buy_limit_orders.append(offer)
-
             return offer_max
 
     def matchTrade(self, order):
@@ -72,26 +71,27 @@ class Market():
             offer = self.findBestOffer(order)
         
             quantity_match = order["quantity"] if order["quantity"] <= offer["quantity"] else offer["quantity"] 
-
+            price_match = offer["price"]
             limit_issuer = offer["trader"]
             market_issuer = order["trader"]
+
+            action = offer["action"]
 
             transaction = {
                 "id" : self.transactions,
                 "limit_issuer" : limit_issuer,
                 "market_issuer" : market_issuer,
+                "action" : action,
                 "volume" : quantity_match,
-                "price" : offer["price"],
-                "order_id" : offer
+                "price" : price_match,
+                "order_id" : offer,
+                "log" : f"Trader {limit_issuer} | {action} | Trader {market_issuer} | {quantity_match} at {price_match}",
+                "description" : "exchange"
             }
 
             self.transactions += 1
             self.volume += quantity_match
 
+            return transaction
+
         self.market_orders += 1
-
-        return transaction
-
-if __name__ == "__main__":
-    
-    beba = deque([1,2,3])
