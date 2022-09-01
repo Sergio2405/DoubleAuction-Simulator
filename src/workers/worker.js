@@ -1,4 +1,5 @@
 let interval;
+let id;
 
 function Round(number) { 
     return (Math.round(number*100))/100
@@ -11,7 +12,7 @@ const createOrder = () => {
         quantity : Round(Math.random()*45),
         price : Round(Math.random()*12),
         active : true,
-        trader : 0
+        trader : id
     }
     return order
 }
@@ -32,6 +33,7 @@ const startTrading = () => {
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("message", (e) => {
     const workerData = e.data
+    id = workerData.id
     switch (workerData.status) {
         case "start":
             postMessage(`Worker ${workerData.id} started trading`)

@@ -125,12 +125,10 @@ const Market = (props) => {
             </button> 
 
             <div className = "screen">
-                <Table key = {1} title = "Market Statistics" data = {transactions}/>
-                <Serie key = {2} title = "Price Serie" data={transactions} />
+                <Table title = "Market Statistics" data = {transactions}/>
+                <Serie title = "Price Serie" data={transactions} />
                 {/* <Table key = {3} title = "Traders" data = {workers}/> object WORKER not valid as child */}
-                <Table key = {4} title = "Logs" data = {logs}/>
-                {/* <Serie key = {5} data={data} />
-                <Serie key = {6} data={data} /> */}
+                <Table title = "Logs" data = {logs}/>
             </div>
         </Fragment>
     )

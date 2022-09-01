@@ -42,8 +42,8 @@ class Market():
 
     def findBestOffer(self, order):
         if order["action"] == "buy":
-            n_orders = len(self.sell_limit_orders)
             offer_min = self.sell_limit_orders.popleft()
+            n_orders = len(self.sell_limit_orders)
             for _ in range(n_orders): 
                 offer = self.sell_limit_orders.popleft() 
                 if offer["price"] < offer_min["price"]:
@@ -53,8 +53,8 @@ class Market():
                     self.sell_limit_orders.append(offer)
             return offer_min
         else:
-            n_orders = len(self.buy_limit_orders)
             offer_max = self.buy_limit_orders.popleft() 
+            n_orders = len(self.buy_limit_orders)
             for _ in range(n_orders): 
                 offer = self.buy_limit_orders.popleft() 
                 if offer.price > offer_max.price:

@@ -3,7 +3,7 @@ import './style.scss'
 const Table = ({ title , data }) => {
     
     return ( 
-        <div>
+        <div className = "table">
             {data.length &&
             <table>
                 <caption>{title}</caption>
