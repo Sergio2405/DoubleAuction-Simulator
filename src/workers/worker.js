@@ -1,7 +1,7 @@
 let interval;
 
 function Round(number) { 
-    return (Math.round(number)*100)/100
+    return (Math.round(number*100))/100
 }
 
 const createOrder = () => {

@@ -12,12 +12,12 @@ const Serie = ({ title , data }) => {
     
           const x = d3.scaleBand()
                       .domain(data
-                                .sort((obs1,obs2) => d3.ascending(obs1.efficiency, obs2.efficiency))
-                                .map((d) => d.efficiency))
+                                .sort((obs1,obs2) => d3.ascending(obs1.quantity, obs2.quantity))
+                                .map((d) => d.quantity))
                       .range([margin.left, width - margin.right])
     
           const y = d3.scaleLinear()
-                      .domain([0, d3.max(data, (d) => d.sales)])
+                      .domain([0, d3.max(data, (d) => d.price)])
                       .range([height - margin.bottom, margin.top]);
     
           const xAxis = (g) =>
@@ -44,10 +44,10 @@ const Serie = ({ title , data }) => {
           svg.select(".y-axis").call(yAxis);
 
           const line = d3.line()
-                    .x(d => x(d.efficiency))
-                    .y(d => y(d.sales))
+                    .x(d => x(d.quantity))
+                    .y(d => y(d.price))
     
-          svg.append("path")
+          svg.select(".serie")
             .datum(data)
             .attr("d", line)
             .attr("fill","none")
@@ -61,6 +61,7 @@ const Serie = ({ title , data }) => {
         <div className = "Serie">
           <div className = "caption">{title}</div>
           <svg ref={ref}>
+            <path className = "serie"/>
             <g className="x-axis" />
             <g className="y-axis" />
           </svg>
