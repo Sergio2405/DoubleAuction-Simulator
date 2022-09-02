@@ -1,5 +1,5 @@
 from collections import deque
-import logging
+from datetime import timedelta, datetime
 
 class Market(): 
 
@@ -10,6 +10,7 @@ class Market():
         self.volume = 0
         self.market_orders = 0
         self.limit_orders = 0
+        self.duration = None
 
     def emptyMarket(self, order):
         return len(self.sell_limit_orders) == 0 if order["action"] == "buy" else len(self.buy_limit_orders) == 0
@@ -39,6 +40,9 @@ class Market():
         self.limit_orders += 1
 
         return transaction
+
+    def setupMarket(self, duration):
+        self.duration = datetime.now() + timedelta(seconds = duration)
 
     def findBestOffer(self, order):
         if order["action"] == "buy":
@@ -93,5 +97,20 @@ class Market():
             self.volume += quantity_match
 
             return transaction
+        
+        else: 
+
+            return {
+                "log" : "No limit orders placed"
+            }
 
         self.market_orders += 1
+
+if __name__ == "__main__": 
+    print(datetime.now())
+    print(timedelta(days=365))
+
+    print(datetime.now() + timedelta(days = 365))
+    print(datetime.now() + timedelta(weeks=48))
+
+    print(datetime.now().strftime('%M:%S.%f'))
