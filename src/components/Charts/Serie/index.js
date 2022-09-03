@@ -10,12 +10,20 @@ const Serie = ({ title , data }) => {
           const width = 500;
           const margin = { top: 20, right: 10, bottom: 10, left: 25 };
     
-          const x = d3.scaleBand()
-                      .domain(data
-                                .sort((obs1,obs2) => d3.ascending(obs1.quantity, obs2.quantity))
-                                .map((d) => d.quantity))
-                      .range([margin.left, width - margin.right])
-    
+          // const x = d3.scaleBand()
+          //             .domain(data
+          //                       .sort((obs1,obs2) => d3.ascending(obs1.quantity, obs2.quantity))
+          //                       .map((d) => d.quantity))
+          //             .range([margin.left, width - margin.right])
+
+          const parsedData = data.map(function(d) {
+            return d3.timeParse("%H:%M:%S.%f")(d.time)
+          });
+
+          const x = d3.scaleTime()
+                        .domain(d3.extent(parsedData))
+                        .range([margin.left, width - margin.right]);
+          
           const y = d3.scaleLinear()
                       .domain([0, d3.max(data, (d) => d.price)])
                       .range([height - margin.bottom, margin.top]);
@@ -44,7 +52,7 @@ const Serie = ({ title , data }) => {
           svg.select(".y-axis").call(yAxis);
 
           const line = d3.line()
-                    .x(d => x(d.quantity))
+                    .x(d => x(d3.timeParse("%H:%M:%S.%f")(d.time)))
                     .y(d => y(d.price))
     
           svg.select(".serie")

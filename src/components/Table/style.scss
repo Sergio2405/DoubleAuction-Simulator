@@ -2,21 +2,20 @@ table {
     color: black;
     text-align: center;
 
-    tbody { 
-        display: flex;
-        flex-direction: column-reverse;
-    }
-
     th {
         color: white;
         background-color: black;
-    }                                          
+        text-transform: capitalize;
+    }      
+
     tr:nth-child(2n) {
         background-color: lightgray;
     }
-  }
+}
 
 .table { 
     overflow: auto;
-    border: 1px solid blue
+    border: 1px blue solid;
+    width: 100%;
+    height: 100%
 }

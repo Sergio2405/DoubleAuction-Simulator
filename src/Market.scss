@@ -1,5 +1,16 @@
-.screen { 
+.market-environment { 
+    display: flex;
+    flex-direction: row;
+    height: 400px
+}
+
+.market-screen { 
     display: grid; 
-    grid-template-columns: 33% 33% 33%;
-    grid-template-rows: 50% 50%;
+    grid-template-columns: repeat(3, 500px);
+}
+
+.market-control { 
+    display: flex;
+    flex-direction: column;
+    border: 1px solid red;
 }

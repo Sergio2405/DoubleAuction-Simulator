@@ -9,6 +9,7 @@ const Market = (props) => {
     const [transactions, setTransactions] = useState([]);
     const [logs, setLogs] = useState([])
     const [workers, setWorkers] = useState([]);
+    const [traders, setTraders] = useState([])
     const [workerResponse, setWorkerResponse] = useState(null);
 
     const [sessionState, setSessionState] = useState(false);
@@ -21,7 +22,12 @@ const Market = (props) => {
             console.log('[STARTING WEBSOCKET]')
             const ws = new WebSocket(props.port);
             ws.addEventListener("open", function(){
-                createWorkers(parseInt(props.workers))
+                createWorkers(parseInt(props.workers));
+                let setup = JSON.stringify({
+                                "setup": {
+                                    "duration": 10
+                                }});
+                ws.send(setup)
             })
             ws.addEventListener("message", function({ data }){
                 setServerResponse(data)
@@ -32,22 +38,18 @@ const Market = (props) => {
                 websocket.close()
             }
         }
-        
       }, [sessionState])
 
     useEffect(() => {
         if (workerResponse){
-            console.log("inside worker response")
           if (websocket.readyState == 1) {
-            console.log(websocket.readyState)
             if (typeof workerResponse != "string"){
                 let order = JSON.stringify(workerResponse)
-                console.log(order)
                 websocket.send(order)
             }else{
-                setLogs(prevLogs => [...prevLogs, {
-                    "Time" : "1",
-                    "Log": workerResponse}])
+                setLogs(prevLogs => [{
+                    "time" : "1",
+                    "log": workerResponse},...prevLogs])
                 }
             }  
          }   
@@ -57,11 +59,12 @@ const Market = (props) => {
         const response = JSON.parse(serverResponse); 
         if (response){
             if (response["description"] == "exchange"){ 
-            setTransactions(prevTransactions => [...prevTransactions, {
+            setTransactions(prevTransactions => [...prevTransactions,{
                 "price" : parseFloat(response["price"]),
-                "quantity" : parseFloat(response["volume"]),
+                "time" : response["time"],
             }]);      
-            let workers_temp = [...workers]
+            
+            let workers_temp = [...traders]
             let limit_issuer = workers_temp[response["limit_issuer"]];
             let market_issuer = workers_temp[response["market_issuer"]];
 
@@ -73,21 +76,29 @@ const Market = (props) => {
             market_issuer["quantity"] += response["action"] == "buy" ? response["volume"] : -response["volume"];
             market_issuer["holdings"] += response["action"] == "buy" ? -volume_price : volume_price;
 
+            limit_issuer["transactions"] ++ ; market_issuer["transactions"] ++;
+
+       
+            limit_issuer["price"] = (limit_issuer["price"] + response["price"]) / (limit_issuer["transactions"] == 0 ? 1 : limit_issuer["transactions"]);
+            market_issuer["price"] = (market_issuer["price"] + response["price"]) / (market_issuer["transactions"] == 0 ? 1 : market_issuer["transactions"]);
+            
             workers_temp[response["limit_issuer"]] = limit_issuer;
             workers_temp[response["market_issuer"]] = market_issuer;
 
-            setWorkers(workers_temp);
+            setTraders(workers_temp);
+
             }
-            setLogs(prevLogs => [...prevLogs, {
-                "time": "1",
-                "Log" : response["log"]
-            }]);
+            setLogs(prevLogs => [{
+                "time": response["time"],
+                "log" : response["log"]
+            },...prevLogs]);
         }
     }, [serverResponse])
 
     const createWorkers = (num) => { 
         console.log("[CREATING WORKERS]")
         let workers = []
+        let traders =[]
         for (let ids = 0; ids <= num; ids ++) { 
             const worker = new Worker(new URL("./workers/worker.js", import.meta.url));
             console.log("[WORKER CREATED]", worker, ids)
@@ -95,12 +106,14 @@ const Market = (props) => {
                 id : ids,
                 status : "start"
             })
-            worker.addEventListener("message", (event) => {
-                setWorkerResponse(event.data)
+            worker.addEventListener("message", ({ data }) => {
+                setWorkerResponse(data)
             });
-            workers.push({worker: worker, id : ids, quantity : 0, holdings : 0});
+            traders.push({id : ids, quantity : 0, price: 0, transactions: 0, holdings : 0});
+            workers.push(worker)
         }
         setWorkers(workers);
+        setTraders(traders);
     }   
 
     const startSimulation = (active) => {
@@ -111,8 +124,8 @@ const Market = (props) => {
             console.log("[CLOSING MARKET]")
 
             workers.forEach((worker) => {
-                worker["worker"].postMessage({status : "stop"});
-                worker["worker"].terminate()
+                worker.postMessage({status : "stop"});
+                worker.terminate()
             })
             setSessionState(false)
         }     
@@ -120,15 +133,22 @@ const Market = (props) => {
 
     return (
         <Fragment>
-            <button onClick = {() => startSimulation(sessionState)} style = {{backgroundColor : sessionState ? "#fd5c63" : "#7CB9E8"}}>
-                {!sessionState ? "Start" : "Stop"}
-            </button> 
-
-            <div className = "screen">
-                <Table title = "Market Statistics" data = {transactions}/>
-                <Serie title = "Price Serie" data={transactions} />
-                {/* <Table key = {3} title = "Traders" data = {workers}/> object WORKER not valid as child */}
-                <Table title = "Logs" data = {logs}/>
+            <div className = "market-environment">
+                <div className = "market-screen">
+                    <Table title = "Market Statistics" data = {traders}/>
+                    <Serie title = "Price Serie" data={transactions} />
+                    { }
+                </div>
+                <div className = "market-control">
+                    <div>
+                        <button 
+                        onClick = {() => startSimulation(sessionState)} 
+                        style = {{backgroundColor : sessionState ? "#fd5c63" : "#7CB9E8"}}>
+                        {!sessionState ? "Start" : "Stop"}
+                        </button>    
+                    </div>
+                    <Table title = "Logs" data = {logs}/>
+                </div>
             </div>
         </Fragment>
     )

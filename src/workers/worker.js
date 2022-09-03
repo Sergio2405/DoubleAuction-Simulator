@@ -12,7 +12,8 @@ const createOrder = () => {
         quantity : Round(Math.random()*45),
         price : Round(Math.random()*12),
         active : true,
-        trader : id
+        trader : id,
+        setup  : null,
     }
     return order
 }
