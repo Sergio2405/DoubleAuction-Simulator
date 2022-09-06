@@ -17,7 +17,7 @@ class Market():
 
     def addOrder(self, order):
 
-        if order["action"] == "Buy":
+        if order["action"] == "buy":
             self.buy_limit_orders.append(order)
         else:
             self.sell_limit_orders.append(order)
@@ -60,8 +60,9 @@ class Market():
             offer_max = self.buy_limit_orders.popleft() 
             n_orders = len(self.buy_limit_orders)
             for _ in range(n_orders): 
-                offer = self.buy_limit_orders.popleft() 
-                if offer.price > offer_max.price:
+                offer = self.buy_limit_orders.popleft()
+                print(offer) 
+                if offer["price"] > offer_max["price"]:
                     self.buy_limit_orders.append(offer_max)
                     offer_max = offer
                 else:

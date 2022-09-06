@@ -66,6 +66,7 @@ const Market = (props) => {
             }]);      
             
             let workers_temp = [...traders]
+
             let limit_issuer = workers_temp[response["limit_issuer"]];
             let market_issuer = workers_temp[response["market_issuer"]];
 
@@ -96,6 +97,25 @@ const Market = (props) => {
         }
     }, [serverResponse])
 
+    const handleAdminOrderSubmit = (event) => { 
+        event.preventDefault()
+        let order = {
+            type : event.target.type.value,
+            action : event.target.action.value,
+            quantity : parseInt(event.target.quantity.value),
+            price : parseFloat(event.target.price.value),
+            active : true,
+            trader : traders.length - 1,
+            setup  : null,
+        }
+        console.log(order)
+        setWorkerResponse(order)
+    }
+
+    const handleConfigSubmit = (event) => { 
+        event.preventDefault()
+    }
+
     const createWorkers = (num) => { 
         console.log("[CREATING WORKERS]")
         let workers = []
@@ -113,6 +133,7 @@ const Market = (props) => {
             traders.push({id : ids, quantity : 0, price: 0, transactions: 0, holdings : 0});
             workers.push(worker)
         }
+        traders.push({id : num + 1, quantity : 0, price: 0, transactions: 0, holdings : 0})
         setWorkers(workers);
         setTraders(traders);
     }   
@@ -151,7 +172,7 @@ const Market = (props) => {
                         style = {{backgroundColor : sessionState ? "#fd5c63" : "#7CB9E8"}}>
                         {!sessionState ? "Start" : "Stop"}
                         </button>
-                        <form>
+                        <form onSubmit = {event => handleConfigSubmit(event)}>
                             <table>
                                 <thead>
                                     <tr>
@@ -169,7 +190,7 @@ const Market = (props) => {
                                 </tbody>
                             </table> 
                         </form>
-                        <form>
+                        <form onSubmit = {event => handleAdminOrderSubmit(event)}>
                             <table>
                                 <thead>
                                     <tr>
@@ -182,20 +203,20 @@ const Market = (props) => {
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><input type = "number"/></td>
-                                        <td><input type = "number"/></td>
+                                        <td><input type = "number" name = "quantity"/></td>
+                                        <td><input type = "number" name = "price"/></td>
                                         <td>
-                                            <select>
-                                                <option disabled selected value>--</option>
-                                                <option>Buy</option>
-                                                <option>Sell</option>
+                                            <select name = "action">
+                                                <option disabled selected>--</option>
+                                                <option value = "buy">Buy</option>
+                                                <option value = "sell">Sell</option>
                                             </select>
                                         </td>
                                         <td>
-                                            <select>
-                                                <option disabled selected value>--</option>
-                                                <option>Market</option>
-                                                <option>Limit</option>
+                                            <select name = "type">
+                                                <option disabled selected>--</option>
+                                                <option value = "market">Market</option>
+                                                <option value = "limit">Limit</option>
                                             </select>
                                         </td>
                                         <td><button type = "submit">Send</button></td>
