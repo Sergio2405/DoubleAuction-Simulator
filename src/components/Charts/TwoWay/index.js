@@ -1,7 +1,7 @@
 import { useD3 } from '../../../hooks/useD3.js';
 import * as d3 from 'd3';
 
-import './style.scss'
+import '../style.scss'
 
 const TwoWay = ({ title , data }) => {
     const ref = useD3(
@@ -66,7 +66,7 @@ const TwoWay = ({ title , data }) => {
         [data.length]);
     
       return (
-        <div className = "Serie">
+        <div className = "graph">
           <div className = "caption">{title}</div>
           <svg ref={ref}>
             <path className = "supply"/>

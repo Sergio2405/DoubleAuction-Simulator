@@ -150,7 +150,60 @@ const Market = (props) => {
                         onClick = {() => startSimulation(sessionState)} 
                         style = {{backgroundColor : sessionState ? "#fd5c63" : "#7CB9E8"}}>
                         {!sessionState ? "Start" : "Stop"}
-                        </button>    
+                        </button>
+                        <form>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Duration (in seconds)</th>
+                                        <th>Traders</th>
+                                        <th></th> 
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type = "number"/></td>
+                                        <td><input type = "number"/></td>
+                                        <td><button type = "submit">Create</button></td>
+                                    </tr>
+                                </tbody>
+                            </table> 
+                        </form>
+                        <form>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Action</th>
+                                        <th>Type</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type = "number"/></td>
+                                        <td><input type = "number"/></td>
+                                        <td>
+                                            <select>
+                                                <option disabled selected value>--</option>
+                                                <option>Buy</option>
+                                                <option>Sell</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select>
+                                                <option disabled selected value>--</option>
+                                                <option>Market</option>
+                                                <option>Limit</option>
+                                            </select>
+                                        </td>
+                                        <td><button type = "submit">Send</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </form>
+                        <Table title = "Orders Placed" data = {traders}/>
                     </div>
                 </div>
                 <Table title = "Market Statistics" data = {traders}/>
