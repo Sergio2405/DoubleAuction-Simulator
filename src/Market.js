@@ -3,13 +3,14 @@ import Table from './components/Table';
 import Serie from './components/Charts/Serie';
 
 import './Market.scss'
+import TwoWay from './components/Charts/TwoWay';
 
 const Market = (props) => {
 
     const [transactions, setTransactions] = useState([]);
     const [logs, setLogs] = useState([])
     const [workers, setWorkers] = useState([]);
-    const [traders, setTraders] = useState([])
+    const [traders, setTraders] = useState([{id : null, quantity : null, price: null, transactions: null, holdings : null}])
     const [workerResponse, setWorkerResponse] = useState(null);
 
     const [sessionState, setSessionState] = useState(false);
@@ -131,14 +132,18 @@ const Market = (props) => {
         }     
     }
 
+    const data = [
+        {price: 91, quantity: 31, curve: "supply"},
+        {price: 82, quantity: 32, curve: "supply"},
+        {price: 15, quantity: 56, curve: "supply"},
+        {price: 61.5, quantity: 12, curve: "demand"},
+        {price: 7, quantity:  92, curve: "demand"},
+        {price: 101, quantity: 23, curve: "demand"},
+    ]
+
     return (
         <Fragment>
             <div className = "market-environment">
-                <div className = "market-screen">
-                    <Table title = "Market Statistics" data = {traders}/>
-                    <Serie title = "Price Serie" data={transactions} />
-                    { }
-                </div>
                 <div className = "market-control">
                     <div>
                         <button 
@@ -147,8 +152,12 @@ const Market = (props) => {
                         {!sessionState ? "Start" : "Stop"}
                         </button>    
                     </div>
-                    <Table title = "Logs" data = {logs}/>
                 </div>
+                <Table title = "Market Statistics" data = {traders}/>
+                <Serie title = "Price Serie" data={transactions} />
+                <Table title = "Logs" data = {logs}/>
+                <TwoWay title = "Supply and Demand" data = {data}/>
+                <Table title = "Trader Statistics" data = {traders}/>
             </div>
         </Fragment>
     )

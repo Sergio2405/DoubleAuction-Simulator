@@ -105,12 +105,3 @@ class Market():
             }
 
         self.market_orders += 1
-
-if __name__ == "__main__": 
-    print(datetime.now())
-    print(timedelta(days=365))
-
-    print(datetime.now() + timedelta(days = 365))
-    print(datetime.now() + timedelta(weeks=48))
-
-    print(datetime.now().strftime('%M:%S.%f'))

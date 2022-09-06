@@ -1,16 +1,21 @@
 .market-environment { 
     display: flex;
+    flex-basis: 50%;
+    flex-wrap: wrap;
+    column-gap: 5px;
+    row-gap: 5px;
     flex-direction: row;
-    height: 400px
-}
-
-.market-screen { 
-    display: grid; 
-    grid-template-columns: repeat(3, 500px);
+    width:1520px;
+    height: auto;
+    border: 1px solid black;
+    margin-top: 4%;
+    margin-left: 10%
 }
 
 .market-control { 
     display: flex;
     flex-direction: column;
     border: 1px solid red;
+    height: 370px;
+    width: 500px;
 }

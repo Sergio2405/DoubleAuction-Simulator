@@ -31,12 +31,13 @@ async def exchange(websocket):
                 await websocket.send(json.dumps(response))
             else:
                 response = {"log" : "Market is closed", "time" : datetime.now().strftime('%H:%M:%S.%f')}
+                await websocket.send(json.dumps(response))
                 print("Market is Closed!")
                 await websocket.close()
         
-async def main():
+async def market():
     async with websockets.serve(exchange, "localhost", 8001):
         await asyncio.Future() 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(market())
