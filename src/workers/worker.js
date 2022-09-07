@@ -9,7 +9,7 @@ const createOrder = () => {
     let order = {
         type : Math.random() > 0.5 ? "market" : "limit" ,
         action : Math.random() > 0.5 ? "buy" : "sell",
-        quantity : Round(Math.random()*45),
+        quantity : parseInt(Math.random()*45),
         price : Round(Math.random()*12),
         active : true,
         trader : id,

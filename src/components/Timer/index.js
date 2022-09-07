@@ -10,10 +10,10 @@ const Timer = ({ duration, active }) => {
         if (seconds == duration){
             const interval = setInterval(() => setSeconds(parseInt(timer.current.innerHTML) - 1),1000);
             setInter(interval);
-        }else if (seconds <= 0){ 
+        }
+        
+        if (seconds <= 0){ 
             clearInterval(inter);
-        }else { 
-            console.log(seconds);
         }
     }, [seconds]);
 
@@ -25,8 +25,9 @@ const Timer = ({ duration, active }) => {
 
     return (
         <div className = "timer">
-            <button ref = {timer} type = "button">{seconds}</button>
-            {active ? "true" : "false"}
+            <label>Time Left </label>
+            <button ref = {timer} type = "button">{seconds ? seconds : duration}</button>
+            <label> seconds</label>
         </div>
     )
 }

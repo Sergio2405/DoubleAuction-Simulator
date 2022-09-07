@@ -16,6 +16,8 @@ const Market = (props) => {
     const [traders, setTraders] = useState([{id : null, quantity : null, price: null, transactions: null, holdings : null}]);
     const [workerResponse, setWorkerResponse] = useState(null);
 
+    const [limitOrders, setLimitOrders] = useState([])
+
     const [sessionState, setSessionState] = useState(false);
     const [serverResponse, setServerResponse] = useState("{}");
 
@@ -52,7 +54,17 @@ const Market = (props) => {
         if (workerResponse){
           if (websocket.readyState == 1) {
             if (typeof workerResponse != "string"){
-                let order = JSON.stringify(workerResponse)
+                let order = workerResponse;
+                if (order["type"] == "limit"){
+                    let limit = {price: order["price"], quantity : order["quantity"], curve : null};
+                    if (order["action"] == "buy"){
+                        limit["curve"] = "demand";
+                    }else{
+                        limit["curve"] = "supply";
+                    }
+                    setLimitOrders(prevLimitOrders => [...prevLimitOrders,limit]); 
+                }
+                order = JSON.stringify(order);
                 websocket.send(order)
             }else{
                 setLogs(prevLogs => [{
@@ -112,7 +124,7 @@ const Market = (props) => {
             quantity : parseInt(event.target.quantity.value),
             price : parseFloat(event.target.price.value),
             active : true,
-            trader : traders.length - 1,
+            trader : traders.length,
             setup  : null,
         }
         setWorkerResponse(order)
@@ -131,7 +143,7 @@ const Market = (props) => {
         console.log("[CREATING WORKERS]")
         let workers = []
         let traders =[]
-        for (let ids = 0; ids <= num; ids ++) { 
+        for (let ids = 0; ids <= num-1; ids ++) { 
             const worker = new Worker(new URL("./workers/worker.js", import.meta.url));
             console.log("[WORKER CREATED]", worker, ids)
             worker.postMessage({
@@ -144,7 +156,7 @@ const Market = (props) => {
             traders.push({id : ids, quantity : 0, price: 0, transactions: 0, holdings : 0});
             workers.push(worker);
         }
-        traders.push({id : num + 1, quantity : 0, price: 0, transactions: 0, holdings : 0});
+        traders.push({id : num , quantity : 0, price: 0, transactions: 0, holdings : 0});
         setWorkers(workers);
         setTraders(traders);
     }   
@@ -165,31 +177,26 @@ const Market = (props) => {
         }     
     }
 
-    const data = [
-        {price: 91, quantity: 31, curve: "supply"},
-        {price: 82, quantity: 32, curve: "supply"},
-        {price: 15, quantity: 56, curve: "supply"},
-        {price: 61.5, quantity: 12, curve: "demand"},
-        {price: 7, quantity:  92, curve: "demand"},
-        {price: 101, quantity: 23, curve: "demand"},
-    ]
-
     return (
         <Fragment>
             <div className = "market-environment">
                 <div className = "market-control">
                     <div>
-                        {setup && (<button 
-                        onClick = {() => startSimulation(sessionState)} 
-                        style = {{backgroundColor : sessionState ? "#fd5c63" : "#7CB9E8"}}>
-                        {!sessionState ? "Start" : "Stop"}
-                        </button>)}
+                        { setup && 
+                            <div className = "market-config">
+                                <button 
+                                onClick = {() => startSimulation(sessionState)} 
+                                style = {{backgroundColor : sessionState ? "#fd5c63" : "#7CB9E8"}}>
+                                {!sessionState ? "Start" : "Stop"}
+                                </button>
+                                <div>
+                                   <label>Traders </label>
+                                    <button>{setup["n_traders"]}</button> 
+                                </div>
+                                <Timer duration = {setup["duration"]} active = {timer}/>
+                            </div>
+                        }
                         
-                        {setup && Object.keys(setup).map((config, index) => (
-                        <label key = {index}>{setup[config]}</label>))}
-
-                        {setup && <Timer duration = {setup["duration"]} active = {timer}/>}
-
                         <form onSubmit = {event => handleConfigSubmit(event)}>
                             <table>
                                 <thead>
@@ -248,7 +255,7 @@ const Market = (props) => {
                 <Table title = "Market Statistics" data = {traders}/>
                 <Serie title = "Price Serie" data={transactions} />
                 <Table title = "Logs" data = {logs}/>
-                <TwoWay title = "Supply and Demand" data = {data}/>
+                <TwoWay title = "Supply and Demand" data = {limitOrders}/>
                 <Table title = "Trader Statistics" data = {traders}/>
             </div>
         </Fragment>

@@ -12,6 +12,12 @@
 .market-control { 
     border: 1px solid black;
 
+    .market-config { 
+        display: flex; 
+        flex-direction: row;
+        justify-content: space-between
+    }
+
     input { 
         width: 100%;
         height: 100%;
