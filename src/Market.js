@@ -18,15 +18,17 @@ const Market = (props) => {
 
     const [websocket, setWebsocket] = useState(null)
 
+    const [setup, setSetup] = useState(null)
+ 
     useEffect(() => {
         if (sessionState){
             console.log('[STARTING WEBSOCKET]')
             const ws = new WebSocket(props.port);
             ws.addEventListener("open", function(){
-                createWorkers(parseInt(props.workers));
+                createWorkers(parseInt(setup["n_traders"]));
                 let setup = JSON.stringify({
                                 "setup": {
-                                    "duration": 10
+                                    "duration" : setup["duration"]
                                 }});
                 ws.send(setup)
             })
@@ -113,7 +115,12 @@ const Market = (props) => {
     }
 
     const handleConfigSubmit = (event) => { 
-        event.preventDefault()
+        event.preventDefault();
+        let setup = {
+            duration : event.target.duration.value,
+            n_traders : event.target.n_traders.value
+        };
+        setSetup(setup);
     }
 
     const createWorkers = (num) => { 
@@ -167,11 +174,15 @@ const Market = (props) => {
             <div className = "market-environment">
                 <div className = "market-control">
                     <div>
-                        <button 
+                        {setup && (<button 
                         onClick = {() => startSimulation(sessionState)} 
                         style = {{backgroundColor : sessionState ? "#fd5c63" : "#7CB9E8"}}>
                         {!sessionState ? "Start" : "Stop"}
-                        </button>
+                        </button>)}
+                        
+                        {setup && Object.keys(setup).map((config, index) => (
+                        <label key = {index}>{setup[config]}</label>))}
+
                         <form onSubmit = {event => handleConfigSubmit(event)}>
                             <table>
                                 <thead>
@@ -183,8 +194,8 @@ const Market = (props) => {
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><input type = "number"/></td>
-                                        <td><input type = "number"/></td>
+                                        <td><input type = "number" name = "duration"/></td>
+                                        <td><input type = "number" name = "n_traders"/></td>
                                         <td><button type = "submit">Create</button></td>
                                     </tr>
                                 </tbody>
@@ -206,15 +217,15 @@ const Market = (props) => {
                                         <td><input type = "number" name = "quantity"/></td>
                                         <td><input type = "number" name = "price"/></td>
                                         <td>
-                                            <select name = "action">
-                                                <option disabled selected>--</option>
+                                            <select defaultValue = {"--"} name = "action">
+                                                <option value = "--" disabled>--</option>
                                                 <option value = "buy">Buy</option>
                                                 <option value = "sell">Sell</option>
                                             </select>
                                         </td>
                                         <td>
-                                            <select name = "type">
-                                                <option disabled selected>--</option>
+                                            <select defaultValue = {"--"} name = "type">
+                                                <option value = "--" disabled>--</option>
                                                 <option value = "market">Market</option>
                                                 <option value = "limit">Limit</option>
                                             </select>
