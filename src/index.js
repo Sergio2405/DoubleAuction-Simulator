@@ -6,8 +6,6 @@ function App() {
   return (
     <div className="App">
       <Market 
-        duration = {10}
-        workers = {2}
         port = "ws://localhost:8001/"
       />
     </div>

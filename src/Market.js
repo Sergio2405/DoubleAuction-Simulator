@@ -1,34 +1,39 @@
 import { Fragment, useState, useEffect } from 'react';
 import Table from './components/Table';
 import Serie from './components/Charts/Serie';
+import TwoWay from './components/Charts/TwoWay';
+import Timer from './components/Timer';
+
 
 import './Market.scss'
-import TwoWay from './components/Charts/TwoWay';
+
 
 const Market = (props) => {
 
     const [transactions, setTransactions] = useState([]);
-    const [logs, setLogs] = useState([])
+    const [logs, setLogs] = useState([]);
     const [workers, setWorkers] = useState([]);
-    const [traders, setTraders] = useState([{id : null, quantity : null, price: null, transactions: null, holdings : null}])
+    const [traders, setTraders] = useState([{id : null, quantity : null, price: null, transactions: null, holdings : null}]);
     const [workerResponse, setWorkerResponse] = useState(null);
 
     const [sessionState, setSessionState] = useState(false);
-    const [serverResponse, setServerResponse] = useState("{}")
+    const [serverResponse, setServerResponse] = useState("{}");
 
-    const [websocket, setWebsocket] = useState(null)
+    const [websocket, setWebsocket] = useState(null);
 
-    const [setup, setSetup] = useState(null)
+    const [setup, setSetup] = useState(null);
+    const [timer, setTimer] = useState(null);
  
     useEffect(() => {
         if (sessionState){
             console.log('[STARTING WEBSOCKET]')
             const ws = new WebSocket(props.port);
+            const setup_ = setup;
             ws.addEventListener("open", function(){
-                createWorkers(parseInt(setup["n_traders"]));
+                createWorkers(parseInt(setup_["n_traders"]));
                 let setup = JSON.stringify({
                                 "setup": {
-                                    "duration" : setup["duration"]
+                                    "duration" : setup_["duration"]
                                 }});
                 ws.send(setup)
             })
@@ -110,15 +115,14 @@ const Market = (props) => {
             trader : traders.length - 1,
             setup  : null,
         }
-        console.log(order)
         setWorkerResponse(order)
     }
 
     const handleConfigSubmit = (event) => { 
         event.preventDefault();
         let setup = {
-            duration : event.target.duration.value,
-            n_traders : event.target.n_traders.value
+            duration : parseInt(event.target.duration.value),
+            n_traders : parseInt(event.target.n_traders.value)
         };
         setSetup(setup);
     }
@@ -138,25 +142,26 @@ const Market = (props) => {
                 setWorkerResponse(data)
             });
             traders.push({id : ids, quantity : 0, price: 0, transactions: 0, holdings : 0});
-            workers.push(worker)
+            workers.push(worker);
         }
-        traders.push({id : num + 1, quantity : 0, price: 0, transactions: 0, holdings : 0})
+        traders.push({id : num + 1, quantity : 0, price: 0, transactions: 0, holdings : 0});
         setWorkers(workers);
         setTraders(traders);
     }   
 
     const startSimulation = (active) => {
         if (!active) { 
-            console.log("[ACTIVATING MARKET]")
-            setSessionState(true)
+            console.log("[ACTIVATING MARKET]");
+            setSessionState(true);
+            setTimer(true);
         }else{
             console.log("[CLOSING MARKET]")
 
             workers.forEach((worker) => {
                 worker.postMessage({status : "stop"});
-                worker.terminate()
-            })
-            setSessionState(false)
+                worker.terminate();
+            });
+            setSessionState(false);
         }     
     }
 
@@ -182,6 +187,8 @@ const Market = (props) => {
                         
                         {setup && Object.keys(setup).map((config, index) => (
                         <label key = {index}>{setup[config]}</label>))}
+
+                        {setup && <Timer duration = {setup["duration"]} active = {timer}/>}
 
                         <form onSubmit = {event => handleConfigSubmit(event)}>
                             <table>

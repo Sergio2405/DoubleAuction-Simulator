@@ -1,24 +1,32 @@
-import {useState, useEffect } from 'react';
+import {useState, useEffect, useRef } from 'react';
 
-const Timer = ({ duration }) => {
+const Timer = ({ duration, active }) => {
+    const [seconds, setSeconds] = useState(null);
+    const [inter, setInter] = useState(null);
 
-    const [seconds, setSeconds] = useState(duration) 
-    const [timer, setTimer] = useState(null)
+    const timer = useRef(null);
     
     useEffect(() => {
         if (seconds == duration){
-            const interval = setInterval(() => setSeconds(seconds - 1),1000);
-            setTimer(interval)
+            const interval = setInterval(() => setSeconds(parseInt(timer.current.innerHTML) - 1),1000);
+            setInter(interval);
         }else if (seconds <= 0){ 
-            clearInterval(timer);
+            clearInterval(inter);
         }else { 
-            console.log(seconds)
+            console.log(seconds);
         }
     }, [seconds]);
 
+    useEffect(() => {
+        if (active) { 
+            setSeconds(duration);
+        }
+    }, [active])
+
     return (
         <div className = "timer">
-            <button type = "button">{seconds}</button>
+            <button ref = {timer} type = "button">{seconds}</button>
+            {active ? "true" : "false"}
         </div>
     )
 }
