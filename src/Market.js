@@ -6,16 +6,20 @@ import Timer from './components/Timer';
 
 import './Market.scss'
 
+const INITIAL_TRADERS = {id : null, quantity : null, price: null, transactions: null, holdings : null};
+const INITIAL_ADMIN_ORDERS = {quantity:null, price:null, action:null, type: null};
+const INITIAL_LOGS = {time:null, log:null}
+
 const Market = (props) => {
 
     const [transactions, setTransactions] = useState([]);
-    const [logs, setLogs] = useState([]);
+    const [logs, setLogs] = useState([INITIAL_LOGS]);
     const [workers, setWorkers] = useState([]);
-    const [traders, setTraders] = useState([{id : null, quantity : null, price: null, transactions: null, holdings : null}]);
+    const [traders, setTraders] = useState([INITIAL_TRADERS]);
     const [workerResponse, setWorkerResponse] = useState(null);
 
     const [limitOrders, setLimitOrders] = useState([]);
-    const [adminOrders, setAdminOrders] = useState([{quantity:null, price:null, action:null, type: null}]);    
+    const [adminOrders, setAdminOrders] = useState([INITIAL_ADMIN_ORDERS]);    
 
     const [sessionState, setSessionState] = useState(false);
     const [serverResponse, setServerResponse] = useState("{}");
@@ -44,6 +48,12 @@ const Market = (props) => {
             setWebsocket(ws)
         }else{
             if (websocket){
+                console.log("[CLOSING MARKET]")
+                workers.forEach((worker) => {
+                    worker.postMessage({status : "stop"});
+                    worker.terminate();
+                });
+                setTimer(false);
                 websocket.close()
             }
         }
@@ -106,12 +116,18 @@ const Market = (props) => {
             workers_temp[response["market_issuer"]] = market_issuer;
 
             setTraders(workers_temp);
-
             }
-            setLogs(prevLogs => [{
-                "time": response["time"],
-                "log" : response["log"]
-            },...prevLogs]);
+
+            if (response["log"]){
+                if (response["log"].includes("closed")){
+                    setSessionState(!sessionState);
+                };
+
+                setLogs(prevLogs => [{
+                    "time": response["time"],
+                    "log" : response["log"]
+                },...prevLogs]);
+            }
         }
     }, [serverResponse])
 
@@ -123,7 +139,7 @@ const Market = (props) => {
             action : event.target.action.value,
             type : event.target.type.value,
             active : true,
-            trader : traders.length,
+            trader : traders.length-1,
             setup  : null,
         };
         setWorkerResponse(order);
@@ -166,9 +182,16 @@ const Market = (props) => {
             console.log("[ACTIVATING MARKET]");
             setSessionState(true);
             setTimer(true);
-        }else{
-            console.log("[CLOSING MARKET]")
 
+            setTraders([INITIAL_TRADERS]);
+            setAdminOrders([INITIAL_ADMIN_ORDERS]);
+            setLogs([INITIAL_LOGS]);
+
+            setLimitOrders([]);
+            setTransactions([]);
+        }else{
+            console.log("[CLOSING MARKET]");
+            setTimer(false);
             workers.forEach((worker) => {
                 worker.postMessage({status : "stop"});
                 worker.terminate();
@@ -196,9 +219,9 @@ const Market = (props) => {
                                 <Timer duration = {setup["duration"]} active = {timer}/>
                             </div>
                         }
-                        
                         <form onSubmit = {event => handleConfigSubmit(event)}>
                             <table>
+                                <caption>Configuration Panel</caption>
                                 <thead>
                                     <tr>
                                         <th>Duration (in seconds)</th>

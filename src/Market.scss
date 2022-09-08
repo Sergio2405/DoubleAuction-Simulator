@@ -6,7 +6,16 @@
     border: 1px solid black;
     margin-top: 4%;
     margin-left: 10%;
-    font-family:'Times New Roman', Times, serif
+    font-family:'Times New Roman', Times, serif;
+
+    caption, .caption{
+        color:  white;
+        border: 1px solid white;
+        background-color: #262626;
+        font-weight: bolder;
+        font-size: large;
+        text-transform: uppercase;
+    }
 }
 
 .market-control { 

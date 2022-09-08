@@ -9,12 +9,6 @@ const Serie = ({ title , data }) => {
           const height = 330;
           const width = 500;
           const margin = { top: 20, right: 10, bottom: 10, left: 25 };
-    
-          // const x = d3.scaleBand()
-          //             .domain(data
-          //                       .sort((obs1,obs2) => d3.ascending(obs1.quantity, obs2.quantity))
-          //                       .map((d) => d.quantity))
-          //             .range([margin.left, width - margin.right])
 
           const parsedData = data.map(function(d) {
             return d3.timeParse("%H:%M:%S.%f")(d.time)
