@@ -7,10 +7,10 @@ import Timer from './components/Timer';
 import './Market.scss'
 
 const INITIAL_TRADERS = {id : null, quantity : null, price: null, transactions: null, holdings : null};
-const INITIAL_ADMIN_ORDERS = {quantity:null, price:null, action:null, type: null};
-const INITIAL_LOGS = {time:null, log:null}
+const INITIAL_ADMIN_ORDERS = {quantity: null, price: null, action: null, type: null};
+const INITIAL_LOGS = {time: null, log: null}
 
-const Market = (props) => {
+function Market(props) {
 
     const [transactions, setTransactions] = useState([]);
     const [logs, setLogs] = useState([INITIAL_LOGS]);

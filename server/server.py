@@ -5,6 +5,9 @@ from datetime import timedelta, datetime
 import logging
 from market import Market
 
+HOST = "localhost" 
+PORT = 8001
+
 async def exchange(websocket):
 
     market = Market()
@@ -37,7 +40,7 @@ async def exchange(websocket):
         
 async def market():
     print("[SERVER UP]")
-    async with websockets.serve(exchange, "localhost", 8001):
+    async with websockets.serve(exchange, HOST, PORT):
         await asyncio.Future() 
 
 if __name__ == "__main__":

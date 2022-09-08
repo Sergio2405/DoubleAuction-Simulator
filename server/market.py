@@ -15,6 +15,9 @@ class Market():
     def emptyMarket(self, order):
         return len(self.sell_limit_orders) == 0 if order["action"] == "buy" else len(self.buy_limit_orders) == 0
 
+    def setupMarket(self, duration):
+        self.duration = datetime.now() + timedelta(seconds = duration)
+
     def addOrder(self, order):
 
         if order["action"] == "buy":
@@ -41,32 +44,30 @@ class Market():
 
         return transaction
 
-    def setupMarket(self, duration):
-        self.duration = datetime.now() + timedelta(seconds = duration)
-
     def findBestOffer(self, order):
         if order["action"] == "buy":
             offer_min = self.sell_limit_orders.popleft()
             n_orders = len(self.sell_limit_orders)
             for _ in range(n_orders): 
                 offer = self.sell_limit_orders.popleft() 
-                if offer["price"] < offer_min["price"]:
-                    self.sell_limit_orders.append(offer_min)
-                    offer_min = offer
-                else:
-                    self.sell_limit_orders.append(offer)
+                if offer["limit_issuer"] != order["market_order"]:
+                    if offer["price"] < offer_min["price"]:
+                        self.sell_limit_orders.append(offer_min)
+                        offer_min = offer
+                    else:
+                        self.sell_limit_orders.append(offer)
             return offer_min
         else:
             offer_max = self.buy_limit_orders.popleft() 
             n_orders = len(self.buy_limit_orders)
             for _ in range(n_orders): 
                 offer = self.buy_limit_orders.popleft()
-                print(offer) 
-                if offer["price"] > offer_max["price"]:
-                    self.buy_limit_orders.append(offer_max)
-                    offer_max = offer
-                else:
-                    self.buy_limit_orders.append(offer)
+                if offer["limit_issuer"] != order["market_order"]:
+                    if offer["price"] > offer_max["price"]:
+                        self.buy_limit_orders.append(offer_max)
+                        offer_max = offer
+                    else:
+                        self.buy_limit_orders.append(offer)
             return offer_max
 
     def matchTrade(self, order):
