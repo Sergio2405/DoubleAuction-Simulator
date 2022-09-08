@@ -36,6 +36,7 @@ async def exchange(websocket):
                 await websocket.close()
         
 async def market():
+    print("[SERVER UP]")
     async with websockets.serve(exchange, "localhost", 8001):
         await asyncio.Future() 
 

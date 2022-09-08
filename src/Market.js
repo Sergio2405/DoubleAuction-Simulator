@@ -4,9 +4,7 @@ import Serie from './components/Charts/Serie';
 import TwoWay from './components/Charts/TwoWay';
 import Timer from './components/Timer';
 
-
 import './Market.scss'
-
 
 const Market = (props) => {
 
@@ -16,7 +14,8 @@ const Market = (props) => {
     const [traders, setTraders] = useState([{id : null, quantity : null, price: null, transactions: null, holdings : null}]);
     const [workerResponse, setWorkerResponse] = useState(null);
 
-    const [limitOrders, setLimitOrders] = useState([])
+    const [limitOrders, setLimitOrders] = useState([]);
+    const [adminOrders, setAdminOrders] = useState([{quantity:null, price:null, action:null, type: null}]);    
 
     const [sessionState, setSessionState] = useState(false);
     const [serverResponse, setServerResponse] = useState("{}");
@@ -119,15 +118,16 @@ const Market = (props) => {
     const handleAdminOrderSubmit = (event) => { 
         event.preventDefault()
         let order = {
-            type : event.target.type.value,
-            action : event.target.action.value,
             quantity : parseInt(event.target.quantity.value),
             price : parseFloat(event.target.price.value),
+            action : event.target.action.value,
+            type : event.target.type.value,
             active : true,
             trader : traders.length,
             setup  : null,
-        }
-        setWorkerResponse(order)
+        };
+        setWorkerResponse(order);
+        setAdminOrders(prevAdminOrders => [order,...prevAdminOrders]);
     }
 
     const handleConfigSubmit = (event) => { 
@@ -249,14 +249,14 @@ const Market = (props) => {
                                 </tbody>
                             </table>
                         </form>
-                        <Table title = "Orders Placed" data = {traders}/>
+                        <Table title = "Orders Placed" headers = {["quantity","price","action","type"]} data = {adminOrders}/>
                     </div>
                 </div>
-                <Table title = "Market Statistics" data = {traders}/>
+                <Table title = "Market Statistics" headers = {["id","quantity","price","transactions","holdings"]} data = {traders}/>
                 <Serie title = "Price Serie" data={transactions} />
-                <Table title = "Logs" data = {logs}/>
+                <Table title = "Logs" headers = {["time","log"]} data = {logs}/>
                 <TwoWay title = "Supply and Demand" data = {limitOrders}/>
-                <Table title = "Trader Statistics" data = {traders}/>
+                <Table title = "Trader Statistics" headers = {["id","quantity","price","transactions","holdings"]} data = {traders}/>
             </div>
         </Fragment>
     )

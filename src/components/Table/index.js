@@ -2,8 +2,7 @@ import './style.scss'
 
 const Round = num => (Math.round(num*100))/100;
 
-const Table = ({ title , data }) => {
-    
+const Table = ({ title , headers, data }) => {
     return ( 
         <div className = "table">
             {data.length &&
@@ -11,7 +10,7 @@ const Table = ({ title , data }) => {
                 <caption>{title}</caption>
                 <thead>
                     <tr>
-                        {Object.keys(data[0]).map((label,i) => (
+                        {headers.map((label,i) => (
                                 <th key={i}>{label}</th>
                             )
                         )}
@@ -20,7 +19,7 @@ const Table = ({ title , data }) => {
                 <tbody>
                     {data.map((obs,j) => (
                         <tr key = {j}>
-                            {Object.keys(obs).map((feature,i) => {
+                            {headers.map((feature,i) => {
                                     let value = obs[feature];
                                     if (typeof value == "number"){
                                         value = Round(value);
