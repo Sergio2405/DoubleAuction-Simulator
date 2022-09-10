@@ -301,12 +301,12 @@ function Market(props) {
                 <Table title = "Market Statistics" headers = {["id","quantity","price","transactions","holdings"]} data = {traders}/>
                 <Serie 
                 title = "Price Serie" 
-                axis = {setup ? {xAxis:setup["timeExtent"], yAxis : setup["max_price"]} : {xAxis:getTimeExtent(60),yAxis:50}}
+                axis = {setup ? {xAxis: setup["timeExtent"], yAxis : setup["max_price"]} : {xAxis:getTimeExtent(60),yAxis:50}}
                 data={transactions} />
                 <Table title = "Logs" headers = {["time","log"]} data = {logs}/>
                 <TwoWay 
                 title = "Bids and Asks" 
-                axis = {setup && {xAxis:setup["max_quantity"], yAxis : setup["max_price"]}}
+                axis = {setup ? {xAxis: setup["max_quantity"], yAxis : setup["max_price"]} : {xAxis:50, yAxis:50}}
                 data = {limitOrders}/>
                 <Table title = "Trader Statistics" headers = {["id","quantity","price","transactions","holdings"]} data = {traders}/>
             </div>

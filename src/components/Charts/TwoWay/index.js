@@ -3,21 +3,19 @@ import * as d3 from 'd3';
 
 import '../style.scss'
 
-const TwoWay = ({ title , data }) => {
+const TwoWay = ({ title , axis, data }) => {
     const ref = useD3(
         (svg) => {
           const height = 330;
           const width = 500;
           const margin = { top: 20, right: 10, bottom: 10, left: 25 };
     
-          const x = d3.scaleBand()
-                      .domain(data
-                                .sort((obs1,obs2) => d3.ascending(obs1.quantity, obs2.quantity))
-                                .map((d) => d.quantity))
+          const x = d3.scaleLinear()
+                      .domain([0,axis["xAxis"]])
                       .range([margin.left, width - margin.right])
 
           const y = d3.scaleLinear()
-                      .domain([0, d3.max(data, (d) => d.price)])
+                      .domain([0, axis["yAxis"]])
                       .range([height - margin.bottom, margin.top]);
     
           const xAxis = (g) =>
@@ -48,7 +46,8 @@ const TwoWay = ({ title , data }) => {
                     .y(d => y(d.price))
     
           svg.select(".supply")
-            .datum(data.filter(obs => obs.curve == "supply"))
+            .datum(data.filter(obs => obs.curve == "supply")
+                       .sort((obs1,obs2) => d3.ascending(obs1.quantity, obs2.quantity)))
             .attr("d", line)
             .attr("fill","none")
             .attr("stroke", "steelblue")
@@ -56,14 +55,15 @@ const TwoWay = ({ title , data }) => {
             .attr("stroke-miterlimit", "1")
 
             svg.select(".demand")
-            .datum(data.filter(obs => obs.curve == "demand"))
+            .datum(data.filter(obs => obs.curve == "demand")
+                       .sort((obs1,obs2) => d3.ascending(obs1.quantity, obs2.quantity)))
             .attr("d", line)
             .attr("fill","none")
             .attr("stroke", "red")
             .attr("stroke-width", "1.5")
             .attr("stroke-miterlimit", "1")
         },
-        [data.length]);
+        [data.length, axis]);
     
       return (
         <div className = "graph">
