@@ -298,7 +298,7 @@ function Market(props) {
                         <Table title = "Orders Placed" headers = {["quantity","price","action","type"]} data = {adminOrders}/>
                     </div>
                 </div>
-                <Table title = "Market Statistics" headers = {["id","quantity","price","transactions","holdings"]} data = {traders}/>
+                <Table title = "Trader Statistics" headers = {["id","quantity","price","transactions","holdings"]} data = {traders}/>
                 <Serie 
                 title = "Price Serie" 
                 axis = {setup ? {xAxis: setup["timeExtent"], yAxis : setup["max_price"]} : {xAxis:getTimeExtent(60),yAxis:50}}
@@ -308,7 +308,7 @@ function Market(props) {
                 title = "Bids and Asks" 
                 axis = {setup ? {xAxis: setup["max_quantity"], yAxis : setup["max_price"]} : {xAxis:50, yAxis:50}}
                 data = {limitOrders}/>
-                <Table title = "Trader Statistics" headers = {["id","quantity","price","transactions","holdings"]} data = {traders}/>
+                <Table title = "Market Statistics" headers = {["id","quantity","price","transactions","holdings"]} data = {traders}/>
             </div>
         </Fragment>
     )

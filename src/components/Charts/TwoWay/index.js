@@ -4,11 +4,10 @@ import * as d3 from 'd3';
 import '../style.scss'
 
 const TwoWay = ({ title , axis, data }) => {
-    const ref = useD3(
-        (svg) => {
+    const ref = useD3((svg) => {
           const height = 330;
           const width = 500;
-          const margin = { top: 20, right: 10, bottom: 10, left: 25 };
+          const margin = { top: 20, right: 10, bottom: 15, left: 40 };
     
           const x = d3.scaleLinear()
                       .domain([0,axis["xAxis"]])
@@ -19,21 +18,22 @@ const TwoWay = ({ title , axis, data }) => {
                       .range([height - margin.bottom, margin.top]);
     
           const xAxis = (g) =>
-            g.attr("transform", `translate(0,${height - margin.bottom})`).call(
-              d3.axisBottom(x)
-            );
+            g.attr("transform", `translate(0,${height - margin.bottom})`)
+            .call(d3.axisBottom(x))
+            .select("text")
+            .attr("x", -15)
+            .attr("y", 150)
+            .attr("transform", "translate(280,-120)")
+            .attr("fill","black")
     
           const yAxis = (g) =>
             g.attr("transform", `translate(${margin.left},0)`)
-            .style("color", "steelblue")
-            .call(d3.axisLeft(y).ticks(null, "s"))
-            .call((g) => g.select(".domain").remove())
-            .call((g) => g.append("text")
-                          .attr("x", -margin.left)
-                          .attr("y", 10)
-                          .attr("fill", "currentColor")
-                          .attr("text-anchor", "start")
-            );
+              .call(d3.axisLeft(y))
+              .select("text")
+              .attr("x", -15)
+              .attr("y", 150)
+              .attr("transform", "translate(-177,150) rotate(-90)")
+              .attr("fill","black")
 
           svg.attr("width", width )
             .attr("height", height + margin.bottom)
@@ -50,7 +50,7 @@ const TwoWay = ({ title , axis, data }) => {
                        .sort((obs1,obs2) => d3.ascending(obs1.quantity, obs2.quantity)))
             .attr("d", line)
             .attr("fill","none")
-            .attr("stroke", "steelblue")
+            .attr("stroke", "blue")
             .attr("stroke-width", "1.5")
             .attr("stroke-miterlimit", "1")
 
@@ -71,8 +71,12 @@ const TwoWay = ({ title , axis, data }) => {
           <svg ref={ref}>
             <path className = "supply"/>
             <path className = "demand"/>
-            <g className="x-axis" />
-            <g className="y-axis" />
+            <g className="x-axis">
+              <text>QUANTITY</text>  
+            </g>
+            <g className="y-axis">
+              <text>PRICE</text>  
+            </g>
           </svg>
         </div>
       );
