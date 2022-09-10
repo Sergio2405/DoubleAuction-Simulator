@@ -50,7 +50,7 @@ class Market():
             n_orders = len(self.sell_limit_orders)
             for _ in range(n_orders): 
                 offer = self.sell_limit_orders.popleft() 
-                if offer["limit_issuer"] != order["market_order"]:
+                if offer["trader"] != order["trader"]:
                     if offer["price"] < offer_min["price"]:
                         self.sell_limit_orders.append(offer_min)
                         offer_min = offer
@@ -62,7 +62,7 @@ class Market():
             n_orders = len(self.buy_limit_orders)
             for _ in range(n_orders): 
                 offer = self.buy_limit_orders.popleft()
-                if offer["limit_issuer"] != order["market_order"]:
+                if offer["trader"] != order["trader"]:
                     if offer["price"] > offer_max["price"]:
                         self.buy_limit_orders.append(offer_max)
                         offer_max = offer

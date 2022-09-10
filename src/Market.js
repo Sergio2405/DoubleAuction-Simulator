@@ -8,7 +8,18 @@ import './Market.scss'
 
 const INITIAL_TRADERS = {id : null, quantity : null, price: null, transactions: null, holdings : null};
 const INITIAL_ADMIN_ORDERS = {quantity: null, price: null, action: null, type: null};
-const INITIAL_LOGS = {time: null, log: null}
+const INITIAL_LOGS = {time: null, log: null};
+
+function getTimeExtent(duration){
+    let start_time = new Date();
+    let start_aux = new Date();
+    start_aux.setSeconds(start_aux.getSeconds() + duration);
+
+    start_time = start_time.getHours()+':'+start_time.getMinutes()+':'+start_time.getSeconds()+'.'+start_time.getMilliseconds();
+    let end_time = start_aux.getHours()+':'+start_aux.getMinutes()+':'+start_aux.getSeconds()+'.'+start_aux.getMilliseconds();
+  
+    return [start_time,end_time];
+}
 
 function Market(props) {
 
@@ -148,10 +159,14 @@ function Market(props) {
 
     const handleConfigSubmit = (event) => { 
         event.preventDefault();
+        let duration = parseInt(event.target.duration.value);
         let setup = {
-            duration : parseInt(event.target.duration.value),
-            n_traders : parseInt(event.target.n_traders.value)
+            duration : duration,
+            n_traders : parseInt(event.target.n_traders.value),
+            max_quantity : parseInt(event.target.max_quantity.value),
+            max_price : parseFloat(event.target.max_price.value)
         };
+        setup["timeExtent"] = getTimeExtent(duration)
         setSetup(setup);
     }
 
@@ -189,6 +204,10 @@ function Market(props) {
 
             setLimitOrders([]);
             setTransactions([]);
+
+            let setup_ = setup;
+            setup_["timeExtent"] = getTimeExtent(setup_["duration"]) 
+            setSetup(setup_)
         }else{
             console.log("[CLOSING MARKET]");
             setTimer(false);
@@ -205,7 +224,7 @@ function Market(props) {
             <div className = "market-environment">
                 <div className = "market-control">
                     <div>
-                        { setup && 
+                        {setup && 
                             <div className = "market-config">
                                 <button 
                                 onClick = {() => startSimulation(sessionState)} 
@@ -226,6 +245,8 @@ function Market(props) {
                                     <tr>
                                         <th>Duration (in seconds)</th>
                                         <th>Traders</th>
+                                        <th>Max Quantity</th>
+                                        <th>Max Price</th>
                                         <th></th> 
                                     </tr>
                                 </thead>
@@ -233,6 +254,8 @@ function Market(props) {
                                     <tr>
                                         <td><input type = "number" name = "duration"/></td>
                                         <td><input type = "number" name = "n_traders"/></td>
+                                        <td><input type = "number" name = "max_quantity"/></td>
+                                        <td><input type = "number" name = "max_price"/></td>
                                         <td><button type = "submit">Create</button></td>
                                     </tr>
                                 </tbody>
@@ -276,9 +299,15 @@ function Market(props) {
                     </div>
                 </div>
                 <Table title = "Market Statistics" headers = {["id","quantity","price","transactions","holdings"]} data = {traders}/>
-                <Serie title = "Price Serie" data={transactions} />
+                <Serie 
+                title = "Price Serie" 
+                axis = {setup ? {xAxis:setup["timeExtent"], yAxis : setup["max_price"]} : {xAxis:getTimeExtent(60),yAxis:50}}
+                data={transactions} />
                 <Table title = "Logs" headers = {["time","log"]} data = {logs}/>
-                <TwoWay title = "Supply and Demand" data = {limitOrders}/>
+                <TwoWay 
+                title = "Bids and Asks" 
+                axis = {setup && {xAxis:setup["max_quantity"], yAxis : setup["max_price"]}}
+                data = {limitOrders}/>
                 <Table title = "Trader Statistics" headers = {["id","quantity","price","transactions","holdings"]} data = {traders}/>
             </div>
         </Fragment>
