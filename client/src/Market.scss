@@ -1,0 +1,38 @@
+.market-environment { 
+    display:grid;
+    grid-template-columns: repeat(3,500px);
+    width:1500px;
+    height: 750px;
+    border: 1px solid black;
+    margin-top: 4%;
+    margin-left: 10%;
+    font-family:'Times New Roman', Times, serif;
+
+    caption, .caption{
+        color:  white;
+        border: 1px solid white;
+        background-color: #262626;
+        font-weight: bolder;
+        font-size: large;
+        text-transform: uppercase;
+    }
+}
+
+.market-control { 
+    border: 1px solid black;
+
+    .market-config { 
+        display: flex; 
+        flex-direction: row;
+        justify-content: space-between
+    }
+
+    button {
+        width: 100%
+    }
+
+    input { 
+        width: 100%;
+        height: 100%;
+    }
+}

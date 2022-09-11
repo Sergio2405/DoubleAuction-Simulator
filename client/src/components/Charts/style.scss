@@ -1,0 +1,11 @@
+.graph {
+    display: flex;
+    flex-direction:column;
+
+    .caption {
+        width: 100%;
+        text-align: center;
+    }
+
+    border: 1px solid black
+}
