@@ -68,6 +68,12 @@ const TwoWay = ({ title , axis, data }) => {
       return (
         <div className = "graph">
           <div className = "caption">{title}</div>
+          <div className = "legend">
+            <div>Bids</div>
+            <div style = {{backgroundColor: "red"}}></div>
+            <div>Asks</div>
+            <div style = {{backgroundColor: "blue"}}></div>
+          </div>
           <svg ref={ref}>
             <path className = "supply"/>
             <path className = "demand"/>

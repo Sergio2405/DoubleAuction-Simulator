@@ -57,6 +57,10 @@ function Serie({ title , axis, data }){
       return (
         <div className = "graph">
           <div className = "caption">{title}</div>
+          <div className = "legend">
+            <div>Price Serie</div>
+            <div style = {{backgroundColor: "blue"}}></div>
+          </div>
           <svg ref={ref}>
             <path className = "serie"/>
             <g className="x-axis">
