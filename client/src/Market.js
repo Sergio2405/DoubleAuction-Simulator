@@ -27,6 +27,10 @@ function getTimeExtent(duration){
     return [start_time,end_time];
 }
 
+function getStandardDeviation(array, mean) {
+    return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / array.length)
+  }
+
 function Market(props) {
     const [logs, setLogs] = useState([INITIAL_LOGS]);
     const [traders, setTraders] = useState([INITIAL_TRADERS]);
@@ -86,18 +90,22 @@ function Market(props) {
                     let limit = {price: order["price"], quantity : order["quantity"], curve : null};
                     if (order["action"] == "buy"){
                         limit["curve"] = "demand";
-                        market_stats["bids"]["mean"] = limitOrders.reduce((priceAccum,order) => priceAccum + order["price"],0)/limitOrders.length;
+                        let mean = limitOrders.reduce((priceAccum,order) => priceAccum + order["price"],0)/limitOrders.length;
+                        market_stats["bids"]["mean"] = mean;
                         
                         let limit_list = limitOrders.map(order => order["price"])
                         market_stats["bids"]["max"] = Math.max(...limit_list);
                         market_stats["bids"]["min"] = Math.min(...limit_list);
+                        market_stats["bids"]["deviation"] = getStandardDeviation(limitOrders, mean)
                     }else{
                         limit["curve"] = "supply";
-                        market_stats["asks"]["mean"] = limitOrders.reduce((priceAccum,order) => priceAccum + order["price"],0)/limitOrders.length
+                        let mean = limitOrders.reduce((priceAccum,order) => priceAccum + order["price"],0)/limitOrders.length;
+                        market_stats["asks"]["mean"] = mean;
                         
                         let limit_list = limitOrders.map(order => order["price"])
                         market_stats["asks"]["max"] = Math.max(...limit_list);
                         market_stats["asks"]["min"] = Math.min(...limit_list);
+                        market_stats["asks"]["deviation"] = getStandardDeviation(limitOrders, mean)
                     }
                     setLimitOrders(prevLimitOrders => [...prevLimitOrders,limit]); 
                     setMarketStatistics(market_stats)
