@@ -28,7 +28,7 @@ function getTimeExtent(duration){
 }
 
 function getStandardDeviation(array, mean) {
-    return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / array.length)
+    return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b,0) / array.length)
   }
 
 function Market(props) {
@@ -96,7 +96,7 @@ function Market(props) {
                         let limit_list = limitOrders.map(order => order["price"])
                         market_stats["bids"]["max"] = Math.max(...limit_list);
                         market_stats["bids"]["min"] = Math.min(...limit_list);
-                        market_stats["bids"]["deviation"] = getStandardDeviation(limitOrders, mean)
+                        market_stats["bids"]["deviation"] = getStandardDeviation(limit_list, mean)
                     }else{
                         limit["curve"] = "supply";
                         let mean = limitOrders.reduce((priceAccum,order) => priceAccum + order["price"],0)/limitOrders.length;
@@ -105,7 +105,7 @@ function Market(props) {
                         let limit_list = limitOrders.map(order => order["price"])
                         market_stats["asks"]["max"] = Math.max(...limit_list);
                         market_stats["asks"]["min"] = Math.min(...limit_list);
-                        market_stats["asks"]["deviation"] = getStandardDeviation(limitOrders, mean)
+                        market_stats["asks"]["deviation"] = getStandardDeviation(limit_list, mean)
                     }
                     setLimitOrders(prevLimitOrders => [...prevLimitOrders,limit]); 
                     setMarketStatistics(market_stats)
@@ -127,6 +127,7 @@ function Market(props) {
             if (response["description"] == "exchange"){ 
             setTransactions(prevTransactions => [...prevTransactions,{
                 "price" : parseFloat(response["price"]),
+                "quantity" : parseInt(response["volume"]),
                 "time" : response["time"],
             }]);      
             
@@ -145,7 +146,6 @@ function Market(props) {
 
             limit_issuer["transactions"] ++ ; market_issuer["transactions"] ++;
 
-       
             limit_issuer["price"] = (limit_issuer["price"] + response["price"]) / (limit_issuer["transactions"] == 0 ? 1 : limit_issuer["transactions"]);
             market_issuer["price"] = (market_issuer["price"] + response["price"]) / (market_issuer["transactions"] == 0 ? 1 : market_issuer["transactions"]);
             
@@ -153,6 +153,27 @@ function Market(props) {
             workers_temp[response["market_issuer"]] = market_issuer;
 
             setTraders(workers_temp);
+
+            // quantity statistics
+            let market_stats = Object.assign({}, marketStatistics);
+            let mean = transactions.reduce((quantityAccum,transaction) => quantityAccum + transaction["quantity"],0)/transactions.length;
+            market_stats["quantity"]["mean"] = mean;
+
+            let transaction_list = transactions.map(transaction => transaction["quantity"]);
+            market_stats["quantity"]["max"] = Math.max(...transaction_list);
+            market_stats["quantity"]["min"] = Math.min(...transaction_list);
+            market_stats["quantity"]["deviation"] = getStandardDeviation(transaction_list, mean);
+
+            // price statistics
+            mean = transactions.reduce((priceAccum,transaction) => priceAccum + transaction["price"],0)/transactions.length;
+            market_stats["price"]["mean"] = mean;
+
+            transaction_list = transactions.map(transaction => transaction["price"]);
+            market_stats["price"]["max"] = Math.max(...transaction_list);
+            market_stats["price"]["min"] = Math.min(...transaction_list);
+            market_stats["price"]["deviation"] = getStandardDeviation(transaction_list, mean);
+
+            setMarketStatistics(market_stats)
             }
 
             if (response["log"]){
