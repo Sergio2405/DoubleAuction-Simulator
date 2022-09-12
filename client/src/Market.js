@@ -9,6 +9,12 @@ import './Market.scss'
 const INITIAL_TRADERS = {id : null, quantity : null, price: null, transactions: null, holdings : null};
 const INITIAL_ADMIN_ORDERS = {quantity: null, price: null, action: null, type: null};
 const INITIAL_LOGS = {time: null, log: null};
+const INITIAL_MARKET_STATISTICS = {
+    price : {variable:"Price", mean:0, deviation:0, max:0, min:0},
+    quantity : {variable:"Quantity", mean:0, deviation:0, max:0, min:0},
+    bids : {variable:"Bids", mean:0, deviation:0, max:0, min:0},
+    asks : {variable:"Asks", mean:0, deviation:0, max:0, min:0},
+}
 
 function getTimeExtent(duration){
     let start_time = new Date();
@@ -22,19 +28,19 @@ function getTimeExtent(duration){
 }
 
 function Market(props) {
+    const [logs, setLogs] = useState([INITIAL_LOGS]);
+    const [traders, setTraders] = useState([INITIAL_TRADERS]);
+    const [adminOrders, setAdminOrders] = useState([INITIAL_ADMIN_ORDERS]);  
+    const [marketStatistics, setMarketStatistics] = useState(INITIAL_MARKET_STATISTICS)
 
     const [transactions, setTransactions] = useState([]);
-    const [logs, setLogs] = useState([INITIAL_LOGS]);
     const [workers, setWorkers] = useState([]);
-    const [traders, setTraders] = useState([INITIAL_TRADERS]);
+    const [limitOrders, setLimitOrders] = useState([]);  
+
+    const [serverResponse, setServerResponse] = useState("{}");
     const [workerResponse, setWorkerResponse] = useState(null);
 
-    const [limitOrders, setLimitOrders] = useState([]);
-    const [adminOrders, setAdminOrders] = useState([INITIAL_ADMIN_ORDERS]);    
-
     const [sessionState, setSessionState] = useState(false);
-    const [serverResponse, setServerResponse] = useState("{}");
-
     const [websocket, setWebsocket] = useState(null);
 
     const [setup, setSetup] = useState(null);
@@ -75,14 +81,26 @@ function Market(props) {
           if (websocket.readyState == 1) {
             if (typeof workerResponse != "string"){
                 let order = workerResponse;
+                let market_stats = Object.assign({},marketStatistics)
                 if (order["type"] == "limit"){
                     let limit = {price: order["price"], quantity : order["quantity"], curve : null};
                     if (order["action"] == "buy"){
                         limit["curve"] = "demand";
+                        market_stats["bids"]["mean"] = limitOrders.reduce((priceAccum,order) => priceAccum + order["price"],0)/limitOrders.length;
+                        
+                        let limit_list = limitOrders.map(order => order["price"])
+                        market_stats["bids"]["max"] = Math.max(...limit_list);
+                        market_stats["bids"]["min"] = Math.min(...limit_list);
                     }else{
                         limit["curve"] = "supply";
+                        market_stats["asks"]["mean"] = limitOrders.reduce((priceAccum,order) => priceAccum + order["price"],0)/limitOrders.length
+                        
+                        let limit_list = limitOrders.map(order => order["price"])
+                        market_stats["asks"]["max"] = Math.max(...limit_list);
+                        market_stats["asks"]["min"] = Math.min(...limit_list);
                     }
                     setLimitOrders(prevLimitOrders => [...prevLimitOrders,limit]); 
+                    setMarketStatistics(market_stats)
                 }
                 order = JSON.stringify(order);
                 websocket.send(order)
@@ -252,10 +270,10 @@ function Market(props) {
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><input type = "number" name = "duration"/></td>
-                                        <td><input type = "number" name = "n_traders"/></td>
-                                        <td><input type = "number" name = "max_quantity"/></td>
-                                        <td><input type = "number" name = "max_price"/></td>
+                                        <td><input type = "number" value = "15" name = "duration"/></td>
+                                        <td><input type = "number" value = "3" name = "n_traders"/></td>
+                                        <td><input type = "number" value = "50" name = "max_quantity"/></td>
+                                        <td><input type = "number" value = "20" name = "max_price"/></td>
                                         <td><button type = "submit">Create</button></td>
                                     </tr>
                                 </tbody>
@@ -308,7 +326,7 @@ function Market(props) {
                 title = "Bids and Asks" 
                 axis = {setup ? {xAxis: setup["max_quantity"], yAxis : setup["max_price"]} : {xAxis:50, yAxis:50}}
                 data = {limitOrders}/>
-                <Table title = "Market Statistics" headers = {["id","quantity","price","transactions","holdings"]} data = {traders}/>
+                <Table title = "Market Statistics" headers = {["variable","mean","deviation","max","min"]} data = {marketStatistics}/>
             </div>
         </Fragment>
     )

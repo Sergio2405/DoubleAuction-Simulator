@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 
 import '../style.scss'
 
-const TwoWay = ({ title , axis, data }) => {
+function TwoWay({ title , axis, data }){
     const ref = useD3((svg) => {
           const height = 330;
           const width = 500;
@@ -50,7 +50,7 @@ const TwoWay = ({ title , axis, data }) => {
                        .sort((obs1,obs2) => d3.ascending(obs1.quantity, obs2.quantity)))
             .attr("d", line)
             .attr("fill","none")
-            .attr("stroke", "blue")
+            .attr("stroke", "steelblue")
             .attr("stroke-width", "1.5")
             .attr("stroke-miterlimit", "1")
 
@@ -59,7 +59,7 @@ const TwoWay = ({ title , axis, data }) => {
                        .sort((obs1,obs2) => d3.ascending(obs1.quantity, obs2.quantity)))
             .attr("d", line)
             .attr("fill","none")
-            .attr("stroke", "red")
+            .attr("stroke", "crimson")
             .attr("stroke-width", "1.5")
             .attr("stroke-miterlimit", "1")
         },
@@ -70,9 +70,9 @@ const TwoWay = ({ title , axis, data }) => {
           <div className = "caption">{title}</div>
           <div className = "legend">
             <div>Bids</div>
-            <div style = {{backgroundColor: "red"}}></div>
+            <div style = {{backgroundColor: "crimson"}}></div>
             <div>Asks</div>
-            <div style = {{backgroundColor: "blue"}}></div>
+            <div style = {{backgroundColor: "steelblue"}}></div>
           </div>
           <svg ref={ref}>
             <path className = "supply"/>

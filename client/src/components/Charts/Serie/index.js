@@ -59,7 +59,7 @@ function Serie({ title , axis, data }){
           <div className = "caption">{title}</div>
           <div className = "legend">
             <div>Price Serie</div>
-            <div style = {{backgroundColor: "blue"}}></div>
+            <div style = {{backgroundColor: "steelblue"}}></div>
           </div>
           <svg ref={ref}>
             <path className = "serie"/>
