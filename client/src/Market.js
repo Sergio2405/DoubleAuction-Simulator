@@ -31,7 +31,7 @@ function getStandardDeviation(array, mean) {
     return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b,0) / array.length)
   }
 
-function Market(props) {
+function Market({ HOST, PORT }) {
     const [logs, setLogs] = useState([INITIAL_LOGS]);
     const [traders, setTraders] = useState([INITIAL_TRADERS]);
     const [adminOrders, setAdminOrders] = useState([INITIAL_ADMIN_ORDERS]);  
@@ -53,7 +53,7 @@ function Market(props) {
     useEffect(() => {
         if (sessionState){
             console.log('[STARTING WEBSOCKET]')
-            const ws = new WebSocket(props.port);
+            const ws = new WebSocket(`ws://${HOST}:${PORT}/`);
             const setup_ = setup;
             ws.addEventListener("open", function(){
                 createWorkers(parseInt(setup_["n_traders"]));

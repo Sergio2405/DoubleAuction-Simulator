@@ -6,7 +6,8 @@ function App() {
   return (
     <div className="App">
       <Market 
-        port = "ws://localhost:8001/"
+        HOST = "localhost"
+        PORT = "8001"
       />
     </div>
   );
