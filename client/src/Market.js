@@ -226,6 +226,8 @@ function Market(props) {
             console.log("[WORKER CREATED]", worker, ids)
             worker.postMessage({
                 id : ids,
+                price : setup["max_price"],
+                quantity : setup["max_quantity"],
                 status : "start"
             })
             worker.addEventListener("message", ({ data }) => {
@@ -273,13 +275,15 @@ function Market(props) {
                     <div>
                         {setup && 
                             <div className = "market-config">
-                                <button 
-                                onClick = {() => startSimulation(sessionState)} 
-                                style = {{backgroundColor : sessionState ? "#fd5c63" : "#7CB9E8"}}>
-                                {!sessionState ? "Start" : "Stop"}
-                                </button>
-                                <div>
-                                   <label>Traders </label>
+                                <div className = "startButton">
+                                    <button 
+                                        onClick = {() => startSimulation(sessionState)} 
+                                        style = {{backgroundColor : sessionState ? "#fd5c63" : "#7CB9E8"}}>
+                                        {!sessionState ? "Start" : "Stop"}
+                                    </button>  
+                                </div>
+                                <div className = "tradersConfig">
+                                    <label>Traders</label>
                                     <button>{setup["n_traders"]}</button> 
                                 </div>
                                 <Timer duration = {setup["duration"]} active = {timer}/>
@@ -347,14 +351,14 @@ function Market(props) {
                 </div>
                 <Table title = "Trader Statistics" headers = {["id","quantity","price","transactions","holdings"]} data = {traders}/>
                 <Serie 
-                title = "Price Serie" 
-                axis = {setup ? {xAxis: setup["timeExtent"], yAxis : setup["max_price"]} : {xAxis:getTimeExtent(60),yAxis:50}}
-                data={transactions} />
+                    title = "Price Serie" 
+                    axis = {setup ? {xAxis: setup["timeExtent"], yAxis : setup["max_price"]} : {xAxis:getTimeExtent(60),yAxis:50}}
+                    data={transactions} />
                 <Table title = "Logs" headers = {["time","log"]} data = {logs}/>
                 <TwoWay 
-                title = "Bids and Asks" 
-                axis = {setup ? {xAxis: setup["max_quantity"], yAxis : setup["max_price"]} : {xAxis:50, yAxis:50}}
-                data = {limitOrders}/>
+                    title = "Bids and Asks" 
+                    axis = {setup ? {xAxis: setup["max_quantity"], yAxis : setup["max_price"]} : {xAxis:50, yAxis:50}}
+                    data = {limitOrders}/>
                 <Table title = "Market Statistics" headers = {["variable","mean","deviation","max","min"]} data = {marketStatistics}/>
             </div>
         </Fragment>

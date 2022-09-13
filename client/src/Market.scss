@@ -3,13 +3,13 @@
     grid-template-columns: repeat(3,500px);
     width:1500px;
     height: 750px;
-    border: 1px solid black;
+    border: 1px double black;
     margin-top: 4%;
     margin-left: 10%;
     font-family:'Times New Roman', Times, serif;
 
     caption, .caption{
-        color:  white;
+        color:white;
         border: 1px solid white;
         background-color: #262626;
         font-weight: bolder;
@@ -24,11 +24,34 @@
     .market-config { 
         display: flex; 
         flex-direction: row;
-        justify-content: space-between
+        justify-content: space-between;
+
+        .tradersConfig {
+            display: flex;
+            align-items: center;
+        }
+
+        .startButton {
+            button {
+                font-size: 15px;
+                // font-weight: bolder;
+                text-align: center;
+                cursor: pointer;
+                // &:hover {
+                //     background-color: black;
+                // };
+                &:active {
+                    box-shadow: 0 2px #666;
+                    transform: translateY(2px);
+                };
+                height: 100%;   
+            }
+        }
     }
 
     button {
-        width: 100%
+        width: 100%;
+        height: 100%;
     }
 
     input { 

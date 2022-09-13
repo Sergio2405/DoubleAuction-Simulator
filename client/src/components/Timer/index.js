@@ -1,4 +1,5 @@
 import {useState, useEffect, useRef } from 'react';
+import './style.scss'
 
 const Timer = ({ duration, active }) => {
     const [seconds, setSeconds] = useState(null);
@@ -25,9 +26,8 @@ const Timer = ({ duration, active }) => {
 
     return (
         <div className = "timer">
-            <label>Time Left </label>
+            <label>Time Left (seconds)</label>
             <button ref = {timer} type = "button">{seconds ? seconds : duration}</button>
-            <label> seconds</label>
         </div>
     )
 }
