@@ -41,13 +41,17 @@ function Serie({ title , axis, data }){
         svg.select(".x-axis").call(xAxis);
         svg.select(".y-axis").call(yAxis);
 
+        const area = d3.area()
+                  .x(d => x(d3.timeParse("%H:%M:%S.%f")(d.time)))
+                  .y(d => y(d.price))
+
         const line = d3.line()
                   .x(d => x(d3.timeParse("%H:%M:%S.%f")(d.time)))
                   .y(d => y(d.price))
   
         svg.select(".serie")
           .datum(data)
-          .attr("d", line)
+          .attr("d", area)
           .attr("fill","none")
           .attr("stroke", "steelblue")
           .attr("stroke-width", "1.5")

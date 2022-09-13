@@ -269,7 +269,7 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS }) {
                         <tr>
                             {Object.keys(setup).map((config,i) => <td key = {i}>{setup[config]}</td>)}
                             <td>
-                                <button 
+                                <button
                                 onClick = {() => startSimulation(sessionState)} 
                                 style = {{backgroundColor : sessionState ? "#fd5c63" : "#7CB9E8"}}>
                                 {!sessionState ? "Start" : "Stop"}
@@ -278,6 +278,7 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS }) {
                         </tr>
                     </tbody>
                 </table>
+                <Timer duration = {setup["duration"]} active = {timer}/>
             </div>
             <div className = "market-environment">
                 <Table 

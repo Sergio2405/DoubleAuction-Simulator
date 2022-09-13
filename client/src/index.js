@@ -4,20 +4,9 @@ import Market from './components/App/Market'
 
 import './index.scss'
 
-function getTimeExtent(duration){
-  let start_time = new Date();
-  let start_aux = new Date();
-  start_aux.setSeconds(start_aux.getSeconds() + duration);
-
-  start_time = start_time.getHours()+':'+start_time.getMinutes()+':'+start_time.getSeconds()+'.'+start_time.getMilliseconds();
-  let end_time = start_aux.getHours()+':'+start_aux.getMinutes()+':'+start_aux.getSeconds()+'.'+start_aux.getMilliseconds();
-
-  return [start_time,end_time];
-}
-
 function App() {
 
-  const [setup, setSetup] = useState({duration:15, n_traders:3, max_quantity: 50, max_price:50, timeExtent: getTimeExtent(15)});
+  const [setup, setSetup] = useState({duration:15, n_traders:3, max_quantity: 50, max_price:50});
 
   const handleConfigSubmit = (event) => {
     event.preventDefault();
@@ -28,7 +17,6 @@ function App() {
         max_quantity : parseInt(event.target.max_quantity.value),
         max_price : parseFloat(event.target.max_price.value)
     };
-    setup["timeExtent"] = getTimeExtent(duration)
     setSetup(setup);
   }
 
