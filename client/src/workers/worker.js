@@ -21,7 +21,6 @@ const createOrder = () => {
 }
 
 const placeOrder = async () => {
-
     let awaitTime = Math.random()*1000;
     await new Promise((resolve) => {setTimeout(resolve,awaitTime)}); // "lag"
     

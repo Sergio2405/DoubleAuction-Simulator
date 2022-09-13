@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Table from '../Table';
 import Serie from '../Charts/Serie';
 import TwoWay from '../Charts/TwoWay';
@@ -20,7 +20,7 @@ function getTimeExtent(duration){
     let start_time = new Date();
     let start_aux = new Date();
     start_aux.setSeconds(start_aux.getSeconds() + duration);
-
+  
     start_time = start_time.getHours()+':'+start_time.getMinutes()+':'+start_time.getSeconds()+'.'+start_time.getMilliseconds();
     let end_time = start_aux.getHours()+':'+start_aux.getMinutes()+':'+start_aux.getSeconds()+'.'+start_aux.getMilliseconds();
   
@@ -204,19 +204,6 @@ function Market({ HOST, PORT }) {
         setAdminOrders(prevAdminOrders => [order,...prevAdminOrders]);
     }
 
-    const handleConfigSubmit = (event) => { 
-        event.preventDefault();
-        let duration = parseInt(event.target.duration.value);
-        let setup = {
-            duration : duration,
-            n_traders : parseInt(event.target.n_traders.value),
-            max_quantity : parseInt(event.target.max_quantity.value),
-            max_price : parseFloat(event.target.max_price.value)
-        };
-        setup["timeExtent"] = getTimeExtent(duration)
-        setSetup(setup);
-    }
-
     const createWorkers = (num) => { 
         console.log("[CREATING WORKERS]")
         let workers = []
@@ -269,35 +256,33 @@ function Market({ HOST, PORT }) {
     }
 
     return (
-        <Fragment>
-            <div className = "market-environment">
-                <Table 
-                    style = {{border: "1px solid red"}} 
-                    title = "Orders Placed" 
-                    headers = {["quantity","price","action","type"]} 
-                    data = {adminOrders}/>
-                <Table 
-                    title = "Trader Statistics" 
-                    headers = {["id","quantity","price","transactions","holdings"]} 
-                    data = {traders}/>
-                <Serie 
-                    title = "Price Serie" 
-                    axis = {setup ? {xAxis: setup["timeExtent"], yAxis : setup["max_price"]} : {xAxis:getTimeExtent(60),yAxis:50}}
-                    data={transactions} />
-                <Table 
-                    title = "Logs" 
-                    headers = {["time","log"]} 
-                    data = {logs}/>
-                <TwoWay 
-                    title = "Bids and Asks" 
-                    axis = {setup ? {xAxis: setup["max_quantity"], yAxis : setup["max_price"]} : {xAxis:50, yAxis:50}}
-                    data = {limitOrders}/>
-                <Table 
-                    title = "Market Statistics" 
-                    headers = {["variable","mean","deviation","max","min"]} 
-                    data = {marketStatistics}/>
-            </div>
-        </Fragment>
+        <div className = "market-environment">
+            <Table 
+                style = {{border: "1px solid red"}} 
+                title = "Orders Placed" 
+                headers = {["trader","quantity","price","action"]} 
+                data = {limitOrders}/>
+            <Table 
+                title = "Trader Statistics" 
+                headers = {["id","quantity","price","transactions","holdings"]} 
+                data = {traders}/>
+            <Serie 
+                title = "Price Serie" 
+                axis = {setup ? {xAxis: setup["timeExtent"], yAxis : setup["max_price"] + 10} : {xAxis:getTimeExtent(60),yAxis:50}}
+                data={transactions} />
+            <Table 
+                title = "Logs" 
+                headers = {["time","log"]} 
+                data = {logs}/>
+            <TwoWay 
+                title = "Bids and Asks" 
+                axis = {setup ? {xAxis: setup["max_quantity"] , yAxis : setup["max_price"] + 10} : {xAxis:50, yAxis:50}}
+                data = {limitOrders}/>
+            <Table 
+                title = "Market Statistics" 
+                headers = {["variable","mean","deviation","max","min"]} 
+                data = {marketStatistics}/>
+        </div>
     )
 }
 
