@@ -21,6 +21,8 @@ const Timer = ({ duration, active }) => {
     useEffect(() => {
         if (active) { 
             setSeconds(duration);
+        }else{
+            setSeconds(0);
         }
     }, [active])
 
