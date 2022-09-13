@@ -2,9 +2,9 @@ import './style.scss'
 
 const Round = num => (Math.round(num*100))/100;
 
-function Table({ title , headers, data }){
+function Table({ title , headers, data, style }){
     return ( 
-        <div className = "table">
+        <div className = "table" style = {style}>
             <table>
                 <caption>{title}</caption>
                 <thead>

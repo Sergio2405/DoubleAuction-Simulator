@@ -44,6 +44,7 @@ function TwoWay({ title , axis, data }){
           const line = d3.line()
                     .x(d => x(d.quantity))
                     .y(d => y(d.price))
+                    .curve(d3.curveStep)
     
           svg.select(".supply")
             .datum(data.filter(obs => obs.curve == "supply")
@@ -54,14 +55,14 @@ function TwoWay({ title , axis, data }){
             .attr("stroke-width", "1.5")
             .attr("stroke-miterlimit", "1")
 
-            svg.select(".demand")
-            .datum(data.filter(obs => obs.curve == "demand")
-                       .sort((obs1,obs2) => d3.ascending(obs1.quantity, obs2.quantity)))
-            .attr("d", line)
-            .attr("fill","none")
-            .attr("stroke", "crimson")
-            .attr("stroke-width", "1.5")
-            .attr("stroke-miterlimit", "1")
+          svg.select(".demand")
+          .datum(data.filter(obs => obs.curve == "demand")
+                      .sort((obs1,obs2) => d3.ascending(obs1.quantity, obs2.quantity)))
+          .attr("d", line)
+          .attr("fill","none")
+          .attr("stroke", "crimson")
+          .attr("stroke-width", "1.5")
+          .attr("stroke-miterlimit", "1")
         },
         [data.length, axis]);
     

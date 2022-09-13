@@ -1,10 +1,10 @@
 import { Fragment, useState, useEffect } from 'react';
-import Table from './components/Table';
-import Serie from './components/Charts/Serie';
-import TwoWay from './components/Charts/TwoWay';
-import Timer from './components/Timer';
+import Table from '../Table';
+import Serie from '../Charts/Serie';
+import TwoWay from '../Charts/TwoWay';
+import Timer from '../Timer';
 
-import './Market.scss'
+import './style.scss'
 
 const INITIAL_TRADERS = {id : null, quantity : null, price: null, transactions: null, holdings : null};
 const INITIAL_ADMIN_ORDERS = {quantity: null, price: null, action: null, type: null};
@@ -222,7 +222,7 @@ function Market({ HOST, PORT }) {
         let workers = []
         let traders =[]
         for (let ids = 0; ids <= num-1; ids ++) { 
-            const worker = new Worker(new URL("./workers/worker.js", import.meta.url));
+            const worker = new Worker(new URL("../../workers/worker.js", import.meta.url));
             console.log("[WORKER CREATED]", worker, ids)
             worker.postMessage({
                 id : ids,
@@ -271,95 +271,31 @@ function Market({ HOST, PORT }) {
     return (
         <Fragment>
             <div className = "market-environment">
-                <div className = "market-control">
-                    <div>
-                        {setup && 
-                            <div className = "market-config">
-                                <div className = "startButton">
-                                    <button 
-                                        onClick = {() => startSimulation(sessionState)} 
-                                        style = {{backgroundColor : sessionState ? "#fd5c63" : "#7CB9E8"}}>
-                                        {!sessionState ? "Start" : "Stop"}
-                                    </button>  
-                                </div>
-                                <div className = "tradersConfig">
-                                    <label>Traders</label>
-                                    <button>{setup["n_traders"]}</button> 
-                                </div>
-                                <Timer duration = {setup["duration"]} active = {timer}/>
-                            </div>
-                        }
-                        <form onSubmit = {event => handleConfigSubmit(event)}>
-                            <table>
-                                <caption>Configuration Panel</caption>
-                                <thead>
-                                    <tr>
-                                        <th>Duration (in seconds)</th>
-                                        <th>Traders</th>
-                                        <th>Max Quantity</th>
-                                        <th>Max Price</th>
-                                        <th></th> 
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><input type = "number" value = "15" name = "duration"/></td>
-                                        <td><input type = "number" value = "3" name = "n_traders"/></td>
-                                        <td><input type = "number" value = "50" name = "max_quantity"/></td>
-                                        <td><input type = "number" value = "20" name = "max_price"/></td>
-                                        <td><button type = "submit">Create</button></td>
-                                    </tr>
-                                </tbody>
-                            </table> 
-                        </form>
-                        <form onSubmit = {event => handleAdminOrderSubmit(event)}>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Quantity</th>
-                                        <th>Price</th>
-                                        <th>Action</th>
-                                        <th>Type</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><input type = "number" name = "quantity"/></td>
-                                        <td><input type = "number" name = "price"/></td>
-                                        <td>
-                                            <select defaultValue = {"--"} name = "action">
-                                                <option value = "--" disabled>--</option>
-                                                <option value = "buy">Buy</option>
-                                                <option value = "sell">Sell</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <select defaultValue = {"--"} name = "type">
-                                                <option value = "--" disabled>--</option>
-                                                <option value = "market">Market</option>
-                                                <option value = "limit">Limit</option>
-                                            </select>
-                                        </td>
-                                        <td><button type = "submit">Send</button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </form>
-                        <Table title = "Orders Placed" headers = {["quantity","price","action","type"]} data = {adminOrders}/>
-                    </div>
-                </div>
-                <Table title = "Trader Statistics" headers = {["id","quantity","price","transactions","holdings"]} data = {traders}/>
+                <Table 
+                    style = {{border: "1px solid red"}} 
+                    title = "Orders Placed" 
+                    headers = {["quantity","price","action","type"]} 
+                    data = {adminOrders}/>
+                <Table 
+                    title = "Trader Statistics" 
+                    headers = {["id","quantity","price","transactions","holdings"]} 
+                    data = {traders}/>
                 <Serie 
                     title = "Price Serie" 
                     axis = {setup ? {xAxis: setup["timeExtent"], yAxis : setup["max_price"]} : {xAxis:getTimeExtent(60),yAxis:50}}
                     data={transactions} />
-                <Table title = "Logs" headers = {["time","log"]} data = {logs}/>
+                <Table 
+                    title = "Logs" 
+                    headers = {["time","log"]} 
+                    data = {logs}/>
                 <TwoWay 
                     title = "Bids and Asks" 
                     axis = {setup ? {xAxis: setup["max_quantity"], yAxis : setup["max_price"]} : {xAxis:50, yAxis:50}}
                     data = {limitOrders}/>
-                <Table title = "Market Statistics" headers = {["variable","mean","deviation","max","min"]} data = {marketStatistics}/>
+                <Table 
+                    title = "Market Statistics" 
+                    headers = {["variable","mean","deviation","max","min"]} 
+                    data = {marketStatistics}/>
             </div>
         </Fragment>
     )
