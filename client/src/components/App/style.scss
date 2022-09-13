@@ -1,30 +1,36 @@
-.market-environment { 
-    display:grid;
-    grid-template-columns: repeat(3,500px);
-    width:1500px;
-    height: 750px;
-    border: 1px double black;
-    margin-left: 10%;
-    font-family:'Times New Roman', Times, serif;
+.market-screen {    
+    .market-environment { 
+        display:grid;
+        grid-template-columns: repeat(3,500px);
+        width:1500px;
+        height: 750px;
+        border: 1px double black;
+        margin-left: 10%;
+        font-family:'Times New Roman', Times, serif;
 
-    caption, .caption{
-        color:white;
-        border: 1px solid white;
-        background-color: #262626;
-        font-weight: bolder;
-        font-size: large;
-        text-transform: uppercase;
+        caption, .caption{
+            color:white;
+            border: 1px solid white;
+            background-color: #262626;
+            font-weight: bolder;
+            font-size: large;
+            text-transform: uppercase;
+        };
+    };
+
+    .market-config { 
+        margin-top:-30px;
+        margin-bottom:20px;
+        margin-left: 600px;
+        width: 200px;
+        
     }
 }
-
 // .market-control { 
 //     border: 1px solid black;
 
 //     .market-config { 
-//         display: flex; 
-//         flex-direction: row;
-//         justify-content: space-between;
-//         overflow: auto;
+//        
 
 //         .tradersConfig {
 //             display: flex;

@@ -31,7 +31,7 @@ function getStandardDeviation(array, mean) {
     return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b,0) / array.length)
   }
 
-function Market({ HOST, PORT }) {
+function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS }) {
     const [logs, setLogs] = useState([INITIAL_LOGS]);
     const [traders, setTraders] = useState([INITIAL_TRADERS]);
     const [adminOrders, setAdminOrders] = useState([INITIAL_ADMIN_ORDERS]);  
@@ -47,7 +47,7 @@ function Market({ HOST, PORT }) {
     const [sessionState, setSessionState] = useState(false);
     const [websocket, setWebsocket] = useState(null);
 
-    const [setup, setSetup] = useState(null);
+    const [setup, setSetup] = useState({duration: DURATION, timeExtent:getTimeExtent(DURATION), max_price: MAX_PRICE, max_quantity: MAX_QUANTITY, n_traders: TRADERS});
     const [timer, setTimer] = useState(null);
  
     useEffect(() => {
@@ -256,33 +256,57 @@ function Market({ HOST, PORT }) {
     }
 
     return (
-        <div className = "market-environment">
-            <Table 
-                style = {{border: "1px solid red"}} 
-                title = "Orders Placed" 
-                headers = {["trader","quantity","price","action"]} 
-                data = {limitOrders}/>
-            <Table 
-                title = "Trader Statistics" 
-                headers = {["id","quantity","price","transactions","holdings"]} 
-                data = {traders}/>
-            <Serie 
-                title = "Price Serie" 
-                axis = {setup ? {xAxis: setup["timeExtent"], yAxis : setup["max_price"] + 10} : {xAxis:getTimeExtent(60),yAxis:50}}
-                data={transactions} />
-            <Table 
-                title = "Logs" 
-                headers = {["time","log"]} 
-                data = {logs}/>
-            <TwoWay 
-                title = "Bids and Asks" 
-                axis = {setup ? {xAxis: setup["max_quantity"] , yAxis : setup["max_price"] + 10} : {xAxis:50, yAxis:50}}
-                data = {limitOrders}/>
-            <Table 
-                title = "Market Statistics" 
-                headers = {["variable","mean","deviation","max","min"]} 
-                data = {marketStatistics}/>
-        </div>
+        <div className = "market-screen">
+            <div className = "market-config">
+                <table>
+                    <thead>
+                        <tr>
+                            {Object.keys(setup).map((config,i) => <th key = {i}>{config}</th>)}
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {Object.keys(setup).map((config,i) => <td key = {i}>{setup[config]}</td>)}
+                            <td>
+                                <button 
+                                onClick = {() => startSimulation(sessionState)} 
+                                style = {{backgroundColor : sessionState ? "#fd5c63" : "#7CB9E8"}}>
+                                {!sessionState ? "Start" : "Stop"}
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div className = "market-environment">
+                <Table 
+                    style = {{border: "1px solid red"}} 
+                    title = "Orders Placed" 
+                    headers = {["trader","quantity","price","action"]} 
+                    data = {limitOrders}/>
+                <Table 
+                    title = "Trader Statistics" 
+                    headers = {["id","quantity","price","transactions","holdings"]} 
+                    data = {traders}/>
+                <Serie 
+                    title = "Price Serie" 
+                    axis = {setup ? {xAxis: setup["timeExtent"], yAxis : setup["max_price"] + 10} : {xAxis:getTimeExtent(60),yAxis:50}}
+                    data={transactions} />
+                <Table 
+                    title = "Logs" 
+                    headers = {["time","log"]} 
+                    data = {logs}/>
+                <TwoWay 
+                    title = "Bids and Asks" 
+                    axis = {setup ? {xAxis: setup["max_quantity"] , yAxis : setup["max_price"] + 10} : {xAxis:50, yAxis:50}}
+                    data = {limitOrders}/>
+                <Table 
+                    title = "Market Statistics" 
+                    headers = {["variable","mean","deviation","max","min"]} 
+                    data = {marketStatistics}/>
+            </div>
+        </div>     
     )
 }
 

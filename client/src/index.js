@@ -64,7 +64,7 @@ function App() {
       <Market 
         HOST = "localhost"
         PORT = "8001"
-        DURATION = {setup["timeExtent"]}
+        DURATION = {setup["duration"]}
         MAX_PRICE = {setup["max_price"]}
         MAX_QUANTITY = {setup["max_quantity"]}
         TRADERS = {setup["n_traders"]}
