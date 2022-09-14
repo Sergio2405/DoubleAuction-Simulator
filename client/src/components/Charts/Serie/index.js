@@ -43,17 +43,18 @@ function Serie({ title , axis, data }){
 
         const area = d3.area()
                   .x(d => x(d3.timeParse("%H:%M:%S.%f")(d.time)))
-                  .y(d => y(d.price))
+                  .y0(y(0))
+                  .y1(d => y(d.price))
 
-        const line = d3.line()
-                  .x(d => x(d3.timeParse("%H:%M:%S.%f")(d.time)))
-                  .y(d => y(d.price))
+        // const line = d3.line()
+        //           .x(d => x(d3.timeParse("%H:%M:%S.%f")(d.time)))
+        //           .y(d => y(d.price))
   
         svg.select(".serie")
           .datum(data)
           .attr("d", area)
-          .attr("fill","none")
-          .attr("stroke", "steelblue")
+          .attr("fill","#a8d8ff")
+          .attr("stroke", "#0059a2")
           .attr("stroke-width", "1.5")
           .attr("stroke-miterlimit", "1")
       },[data.length, axis]);
@@ -63,7 +64,7 @@ function Serie({ title , axis, data }){
           <div className = "caption">{title}</div>
           <div className = "legend">
             <div>Price Serie</div>
-            <div style = {{backgroundColor: "steelblue"}}></div>
+            <div style = {{border:"1px solid #0059a2",backgroundColor: "#a8d8ff"}}></div>
           </div>
           <svg ref={ref}>
             <path className = "serie"/>
