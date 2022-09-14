@@ -55,7 +55,7 @@ function Serie({ title , axis, data }){
           .attr("d", area)
           .attr("fill","#a8d8ff")
           .attr("stroke", "#0059a2")
-          .attr("stroke-width", "1.5")
+          .attr("stroke-width", "2.5")
           .attr("stroke-miterlimit", "1")
       },[data.length, axis]);
     
@@ -64,7 +64,7 @@ function Serie({ title , axis, data }){
           <div className = "caption">{title}</div>
           <div className = "legend">
             <div>Price Serie</div>
-            <div style = {{border:"1px solid #0059a2",backgroundColor: "#a8d8ff"}}></div>
+            <div style = {{border:"2.5px solid #0059a2",backgroundColor: "#a8d8ff"}}></div>
           </div>
           <svg ref={ref}>
             <path className = "serie"/>

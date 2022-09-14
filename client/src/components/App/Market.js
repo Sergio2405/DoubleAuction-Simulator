@@ -87,7 +87,7 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS }) {
                 let order = workerResponse;
                 let market_stats = Object.assign({},marketStatistics)
                 if (order["type"] == "limit"){
-                    let limit = {price: order["price"], quantity : order["quantity"], curve : null};
+                    let limit = {id : order["trader"], price: order["price"], quantity : order["quantity"], action: order["action"], curve : null};
                     if (order["action"] == "buy"){
                         limit["curve"] = "demand";
                         let mean = limitOrders.reduce((priceAccum,order) => priceAccum + order["price"],0)/limitOrders.length;
@@ -282,9 +282,9 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS }) {
             </div>
             <div className = "market-environment">
                 <Table 
-                    style = {{border: "1px solid red"}} 
                     title = "Orders Placed" 
-                    headers = {["trader","quantity","price","action"]} 
+                    headers = {["id","quantity","price","action"]} 
+                    styleCell = {{action: {attribute : "backgroundColor", cond : {Buy : "green", Sell : "red"}}}} 
                     data = {limitOrders}/>
                 <Table 
                     title = "Trader Statistics" 
