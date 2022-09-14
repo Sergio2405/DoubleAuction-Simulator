@@ -6,7 +6,7 @@ import './index.scss'
 
 function App() {
 
-  const [setup, setSetup] = useState({duration:15, n_traders:3, max_quantity: 50, max_price:50});
+  const [setup, setSetup] = useState({duration:15, n_traders:3, max_quantity: 50, max_price:50, holdings:1000});
 
   const handleConfigSubmit = (event) => {
     event.preventDefault();
@@ -15,7 +15,8 @@ function App() {
         duration : duration,
         n_traders : parseInt(event.target.n_traders.value),
         max_quantity : parseInt(event.target.max_quantity.value),
-        max_price : parseFloat(event.target.max_price.value)
+        max_price : parseFloat(event.target.max_price.value),
+        holdings : parseFloat(event.target.max_price.holdings),
     };
     setSetup(setup);
   }
@@ -32,6 +33,7 @@ function App() {
                             <th>Traders</th>
                             <th>Max Quantity</th>
                             <th>Max Price</th>
+                            <th>Holdings</th>
                             <th></th> 
                         </tr>
                     </thead>
@@ -41,6 +43,7 @@ function App() {
                             <td><input type = "number" value = {setup["n_traders"]} name = "n_traders"/></td>
                             <td><input type = "number" value = {setup["max_quantity"]} name = "max_quantity"/></td>
                             <td><input type = "number" value = {setup["max_price"]} name = "max_price"/></td>
+                            <td><input type = "number" value = {setup["holdings"]} name = "holdings"/></td>
                             <td><button type = "submit">Create</button></td>
                         </tr>
                     </tbody>
@@ -56,6 +59,7 @@ function App() {
         MAX_PRICE = {setup["max_price"]}
         MAX_QUANTITY = {setup["max_quantity"]}
         TRADERS = {setup["n_traders"]}
+        HOLDINGS = {setup["holdings"]}
       />
     </div>
   );

@@ -2,7 +2,7 @@ import './style.scss'
 
 const Round = num => (Math.round(num*100))/100;
 
-function Table({ title , headers, data, styleCell }){
+function Table({ title , headers, data , cellColors}){
     return ( 
         <div className = "table">
             <table>
@@ -23,7 +23,20 @@ function Table({ title , headers, data, styleCell }){
                                     if (typeof value == "number"){
                                         value = Round(value);
                                     };
-                                    return <td key = {i}>{value}</td>;
+                                    
+                                    let style_cell = null;
+                                    if (cellColors){
+                                        if (cellColors[feature]){
+                                            let options = Object.keys(cellColors[feature]);
+                                            for (let option of options){
+                                                if (option == value){
+                                                    style_cell = cellColors[feature][option];
+                                                    break;
+                                                };
+                                            };
+                                        }
+                                    }
+                                    return <td key = {i} style = {{backgroundColor: style_cell}}>{value}</td>;
                                 }
                             )}
                         </tr>

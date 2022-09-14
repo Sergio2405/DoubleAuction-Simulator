@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 
 import '../style.scss'
 
-function TwoWay({ title , axis, data }){
+function TwoWay({ title , labels, axis, data }){
     const ref = useD3((svg) => {
           const height = 330;
           const width = 500;
@@ -79,10 +79,10 @@ function TwoWay({ title , axis, data }){
             <path className = "supply"/>
             <path className = "demand"/>
             <g className="x-axis">
-              <text>QUANTITY</text>  
+              <text>{labels["xAxis"]}</text>  
             </g>
             <g className="y-axis">
-              <text>PRICE</text>  
+              <text>{labels["yAxis"]}</text>  
             </g>
           </svg>
         </div>

@@ -4,7 +4,7 @@
         grid-template-columns: repeat(3,500px);
         width:1500px;
         height: 750px;
-        border: 1px double black;
+        border: 2px double black;
         margin-left: 10%;
         font-family:'Times New Roman', Times, serif;
 
@@ -24,22 +24,22 @@
         align-items:center;
         margin-top:-45px;
         margin-bottom:10px;
-        margin-left: 850px;
-        width: 200px;
+        margin-left: 600px;
+        width: 700px;
         
-        button {
+        .startButton {
+            height: 100%; 
             font-size: 15px;
-            // font-weight: bolder;
+            font-weight: bolder;
             text-align: center;
             cursor: pointer;
-            // &:hover {
-            //     background-color: black;
-            // };
             &:active {
                 box-shadow: 0 2px #666;
                 transform: translateY(2px);
             };
-            height: 100%;   
+            &:hover {
+                background-color: steelblue;
+            };  
         }
     }
 }

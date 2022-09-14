@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 
 import '../style.scss'
 
-function Serie({ title , axis, data }){
+function Serie({ title , labels, axis, data }){
     const ref = useD3((svg) => {
         const height = 330;
         const width = 500;
@@ -45,10 +45,6 @@ function Serie({ title , axis, data }){
                   .x(d => x(d3.timeParse("%H:%M:%S.%f")(d.time)))
                   .y0(y(0))
                   .y1(d => y(d.price))
-
-        // const line = d3.line()
-        //           .x(d => x(d3.timeParse("%H:%M:%S.%f")(d.time)))
-        //           .y(d => y(d.price))
   
         svg.select(".serie")
           .datum(data)
@@ -69,10 +65,10 @@ function Serie({ title , axis, data }){
           <svg ref={ref}>
             <path className = "serie"/>
             <g className="x-axis">
-              <text>TIME (IN SECONDS)</text>  
+              <text>{labels["xAxis"]}</text>  
             </g>
             <g className="y-axis">
-              <text>PRICE</text>  
+              <text>{labels["yAxis"]}</text>  
             </g>
           </svg>
         </div>

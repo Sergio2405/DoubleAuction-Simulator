@@ -31,7 +31,7 @@ function getStandardDeviation(array, mean) {
     return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b,0) / array.length)
   }
 
-function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS }) {
+function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS, HOLDINGS }) {
     const [logs, setLogs] = useState([INITIAL_LOGS]);
     const [traders, setTraders] = useState([INITIAL_TRADERS]);
     const [adminOrders, setAdminOrders] = useState([INITIAL_ADMIN_ORDERS]);  
@@ -47,7 +47,7 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS }) {
     const [sessionState, setSessionState] = useState(false);
     const [websocket, setWebsocket] = useState(null);
 
-    const [setup, setSetup] = useState({duration: DURATION, timeExtent:getTimeExtent(DURATION), max_price: MAX_PRICE, max_quantity: MAX_QUANTITY, n_traders: TRADERS});
+    const [setup, setSetup] = useState({duration: DURATION, timeExtent:getTimeExtent(DURATION), max_price: MAX_PRICE, max_quantity: MAX_QUANTITY, n_traders: TRADERS, holdings:HOLDINGS});
     const [timer, setTimer] = useState(null);
  
     useEffect(() => {
@@ -220,10 +220,10 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS }) {
             worker.addEventListener("message", ({ data }) => {
                 setWorkerResponse(data)
             });
-            traders.push({id : ids, quantity : 0, price: 0, transactions: 0, holdings : 0});
+            traders.push({id : ids, quantity : 0, price: 0, transactions: 0, holdings : setup["holdings"]});
             workers.push(worker);
         }
-        traders.push({id : num , quantity : 0, price: 0, transactions: 0, holdings : 0});
+        traders.push({id : num , quantity : 0, price: 0, transactions: 0, holdings : setup["holdings"]});
         setWorkers(workers);
         setTraders(traders);
     }   
@@ -269,10 +269,11 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS }) {
                         <tr>
                             {Object.keys(setup).map((config,i) => <td key = {i}>{setup[config]}</td>)}
                             <td>
-                                <button
+                                <button 
+                                className = "startButton"
                                 onClick = {() => startSimulation(sessionState)} 
                                 style = {{backgroundColor : sessionState ? "#fd5c63" : "#7CB9E8"}}>
-                                {!sessionState ? "Start" : "Stop"}
+                                {!sessionState ? "Start" : "Reset"}
                                 </button>
                             </td>
                         </tr>
@@ -284,28 +285,36 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS }) {
                 <Table 
                     title = "Orders Placed" 
                     headers = {["id","quantity","price","action"]} 
-                    styleCell = {{action: {attribute : "backgroundColor", cond : {Buy : "green", Sell : "red"}}}} 
-                    data = {limitOrders}/>
+                    cellColors = {{action:{buy:"crimson", sell:"steelblue"}}}
+                    data = {limitOrders}
+                />
                 <Table 
                     title = "Trader Statistics" 
                     headers = {["id","quantity","price","transactions","holdings"]} 
-                    data = {traders}/>
+                    data = {traders}
+                />
                 <Serie 
                     title = "Price Serie" 
+                    labels = {{xAxis: "TIME (IN SECONDS)", yAxis : "PRICE"}}
                     axis = {setup ? {xAxis: setup["timeExtent"], yAxis : setup["max_price"] + 10} : {xAxis:getTimeExtent(60),yAxis:50}}
-                    data={transactions} />
+                    data={transactions} 
+                />
                 <Table 
                     title = "Logs" 
                     headers = {["time","log"]} 
-                    data = {logs}/>
+                    data = {logs}
+                />
                 <TwoWay 
                     title = "Bids and Asks" 
+                    labels = {{xAxis: "QUANTITY", yAxis : "PRICE"}}
                     axis = {setup ? {xAxis: setup["max_quantity"] , yAxis : setup["max_price"] + 10} : {xAxis:50, yAxis:50}}
-                    data = {limitOrders}/>
+                    data = {limitOrders}
+                />
                 <Table 
                     title = "Market Statistics" 
                     headers = {["variable","mean","deviation","max","min"]} 
-                    data = {marketStatistics}/>
+                    data = {marketStatistics}
+                />
             </div>
         </div>     
     )
