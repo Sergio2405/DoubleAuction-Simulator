@@ -1,17 +1,67 @@
-# Getting Started with Create React App
+<!-- # Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). -->
 
-## Available Scripts
+## Double-Auction Simulator (Currently in Development)
 
-In the project directory, you can run:
+Project that consists on simulating a double auction market using React (client side) and Python (server side).
 
-### `npm start`
+### Client
+The App consists of a Configuration Panel and a Dashboard consisting of currently 6 screens. 
 
-Runs the app in the development mode.\
+1. Orders Placed : Limit orders placed by every trader bot.
+2. Trader Statistics : A brief statistics about the status of the trader.
+3. Price Serie : A Time Serie chart of the price.
+4. Logs : Logs of the market such as transactions and orders placed.
+5. Bids & Asks : Twoway chart of the Bids and Asks.
+6. Market Statistics : Important statistics about the market such as the volume, price and bids & asks.
+
+This screens will update in real time as the traders place their orders and transactions are made.
+
+### Server
+Websockets implementation for python using asyncio. These consists of a Market object that represents the market functionality. The market can do these operations: 
+1. Add orders to a queue. 
+2. Update the time. 
+3. Match trading orders.
+4. Sends back to the client the transactions and limit orders made.
+
+### Deploy App
+To launch the app you need to have installed node in order to run the React app (client side). For the server side just need python.
+
+1. Open two terminals. In the first one will be running the client side and in the second will run the server side. 
+
+2. Open the 1st terminal and cd to src folder and then run the following command:
+```bash
+npm start
+```
+The client side app runs the in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
+3. Open the 2nd terminal and run the following command: 
+```bash
+python server\server.py
+```
+4. If you want to change the PORT and HOST where the app runs and websocket listens: 
+   - Change the parameters PORT and HOST in the Market component in the client side (client\src\index.js)
+    ```js
+    <Market 
+        HOST = "localhost"
+        PORT = "8001"
+        DURATION = {setup["duration"]}
+        MAX_PRICE = {setup["max_price"]}
+        MAX_QUANTITY = {setup["max_quantity"]}
+        TRADERS = {setup["n_traders"]}
+        HOLDINGS = {setup["holdings"]}
+        COLORS = {["yellow", "green","gray", "brown", "orange"]}
+      />
+    ```
+    - Change the parameters PORT and HOST in the server side (server\server.py)
+    ```python
+    HOST = "localhost" 
+    PORT = 8001
+    ```
+    - Remember that these parameters need to be the same in both server and client side.
+<!-- The page will reload when you make changes.\
 You may also see any lint errors in the console.
 
 ### `npm test`
@@ -37,9 +87,9 @@ If you aren't satisfied with the build tool and configuration choices, you can `
 
 Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it. -->
 
-## Learn More
+<!-- ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
@@ -67,4 +117,4 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 
 ### `npm run build` fails to minify
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify) -->
