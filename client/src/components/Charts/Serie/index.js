@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 
 import '../style.scss'
 
-function Serie({ title , axis, data }){
+function Serie({ title , labels, axis, data }){
     const ref = useD3((svg) => {
         const height = 330;
         const width = 500;
@@ -41,29 +41,34 @@ function Serie({ title , axis, data }){
         svg.select(".x-axis").call(xAxis);
         svg.select(".y-axis").call(yAxis);
 
-        const line = d3.line()
+        const area = d3.area()
                   .x(d => x(d3.timeParse("%H:%M:%S.%f")(d.time)))
-                  .y(d => y(d.price))
+                  .y0(y(0))
+                  .y1(d => y(d.price))
   
         svg.select(".serie")
           .datum(data)
-          .attr("d", line)
-          .attr("fill","none")
-          .attr("stroke", "steelblue")
-          .attr("stroke-width", "1.5")
+          .attr("d", area)
+          .attr("fill","#a8d8ff")
+          .attr("stroke", "#0059a2")
+          .attr("stroke-width", "2.5")
           .attr("stroke-miterlimit", "1")
       },[data.length, axis]);
     
       return (
         <div className = "graph">
           <div className = "caption">{title}</div>
+          <div className = "legend">
+            <div>Price Serie</div>
+            <div style = {{border:"2.5px solid #0059a2",backgroundColor: "#a8d8ff"}}></div>
+          </div>
           <svg ref={ref}>
             <path className = "serie"/>
             <g className="x-axis">
-              <text>TIME (IN SECONDS)</text>  
+              <text>{labels["xAxis"]}</text>  
             </g>
             <g className="y-axis">
-              <text>PRICE</text>  
+              <text>{labels["yAxis"]}</text>  
             </g>
           </svg>
         </div>

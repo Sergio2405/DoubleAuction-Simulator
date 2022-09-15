@@ -7,5 +7,19 @@
         text-align: center;
     }
 
-    border: 1px solid black
+    border: 1px solid black;
+
+    .legend { 
+        position: absolute;
+        margin-top:35px;
+        height:20px;
+        display:flex;
+        column-gap:10px;
+        padding-left: 200px;
+
+        & :nth-child(2n){
+            border:1px solid black;
+            width:20px;
+        }
+    }
 }

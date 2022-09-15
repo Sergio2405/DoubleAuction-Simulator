@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 
 import '../style.scss'
 
-const TwoWay = ({ title , axis, data }) => {
+function TwoWay({ title , labels, curveColors, axis, data }){
     const ref = useD3((svg) => {
           const height = 330;
           const width = 500;
@@ -44,38 +44,45 @@ const TwoWay = ({ title , axis, data }) => {
           const line = d3.line()
                     .x(d => x(d.quantity))
                     .y(d => y(d.price))
+                    .curve(d3.curveStep)
     
-          svg.select(".supply")
+          svg.select(".firstCurve")
             .datum(data.filter(obs => obs.curve == "supply")
                        .sort((obs1,obs2) => d3.ascending(obs1.quantity, obs2.quantity)))
             .attr("d", line)
             .attr("fill","none")
-            .attr("stroke", "blue")
+            .attr("stroke", curveColors[0])
             .attr("stroke-width", "1.5")
             .attr("stroke-miterlimit", "1")
 
-            svg.select(".demand")
-            .datum(data.filter(obs => obs.curve == "demand")
-                       .sort((obs1,obs2) => d3.ascending(obs1.quantity, obs2.quantity)))
-            .attr("d", line)
-            .attr("fill","none")
-            .attr("stroke", "red")
-            .attr("stroke-width", "1.5")
-            .attr("stroke-miterlimit", "1")
+          svg.select(".secondCurve")
+          .datum(data.filter(obs => obs.curve == "demand")
+                      .sort((obs1,obs2) => d3.ascending(obs1.quantity, obs2.quantity)))
+          .attr("d", line)
+          .attr("fill","none")
+          .attr("stroke", curveColors[1])
+          .attr("stroke-width", "1.5")
+          .attr("stroke-miterlimit", "1")
         },
         [data.length, axis]);
     
       return (
         <div className = "graph">
           <div className = "caption">{title}</div>
+          <div className = "legend">
+            <div>Bids</div>
+            <div style = {{backgroundColor: curveColors[1]}}></div>
+            <div>Asks</div>
+            <div style = {{backgroundColor: curveColors[0]}}></div>
+          </div>
           <svg ref={ref}>
-            <path className = "supply"/>
-            <path className = "demand"/>
+            <path className = "firstCurve"/>
+            <path className = "secondCurve"/>
             <g className="x-axis">
-              <text>QUANTITY</text>  
+              <text>{labels["xAxis"]}</text>  
             </g>
             <g className="y-axis">
-              <text>PRICE</text>  
+              <text>{labels["yAxis"]}</text>  
             </g>
           </svg>
         </div>
