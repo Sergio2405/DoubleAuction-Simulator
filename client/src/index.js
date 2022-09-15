@@ -6,19 +6,18 @@ import './index.scss'
 
 function App() {
 
-  const [setup, setSetup] = useState({duration:15, n_traders:3, max_quantity: 50, max_price:50, holdings:1000});
+  const [setup, setSetup] = useState({duration:15, n_traders:3, max_quantity: 50, max_price:25, holdings:1000});
 
   const handleConfigSubmit = (event) => {
     event.preventDefault();
     let duration = parseInt(event.target.duration.value);
-    let setup = {
-        duration : duration,
-        n_traders : parseInt(event.target.n_traders.value),
-        max_quantity : parseInt(event.target.max_quantity.value),
-        max_price : parseFloat(event.target.max_price.value),
-        holdings : parseFloat(event.target.max_price.holdings),
-    };
-    setSetup(setup);
+    setSetup({
+      duration : duration,
+      n_traders : parseInt(event.target.n_traders.value),
+      max_quantity : parseInt(event.target.max_quantity.value),
+      max_price : parseFloat(event.target.max_price.value),
+      holdings : parseFloat(event.target.holdings.value),
+  });
   }
 
   return (
@@ -39,11 +38,11 @@ function App() {
                     </thead>
                     <tbody>
                         <tr>
-                            <td><input type = "number" value = {setup["duration"]} name = "duration"/></td>
-                            <td><input type = "number" value = {setup["n_traders"]} name = "n_traders"/></td>
-                            <td><input type = "number" value = {setup["max_quantity"]} name = "max_quantity"/></td>
-                            <td><input type = "number" value = {setup["max_price"]} name = "max_price"/></td>
-                            <td><input type = "number" value = {setup["holdings"]} name = "holdings"/></td>
+                            <td><input type = "number" name = "duration"/></td>
+                            <td><input type = "number" name = "n_traders"/></td>
+                            <td><input type = "number" name = "max_quantity"/></td>
+                            <td><input type = "number" name = "max_price"/></td>
+                            <td><input type = "number" name = "holdings"/></td>
                             <td><button type = "submit">Create</button></td>
                         </tr>
                     </tbody>

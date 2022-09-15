@@ -22,7 +22,6 @@ const createOrder = () => {
 }
 
 const placeOrder = async () => {
-    console.log("placing order")
     let awaitTime = Math.random()*1000;
     await new Promise((resolve) => {setTimeout(resolve,awaitTime)}); // "lag"
 
@@ -51,7 +50,6 @@ self.addEventListener("message", ({ data }) => {
                 break;
         
             case "stop":
-                console.log(`Worker stopped trading`);
                 clearInterval(interval)
                 break;
         }

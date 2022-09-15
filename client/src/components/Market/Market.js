@@ -61,6 +61,17 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS, HOLDIN
     const [setup, setSetup] = useState({duration: DURATION, timeExtent:getTimeExtent(DURATION), max_price: MAX_PRICE, max_quantity: MAX_QUANTITY, n_traders: TRADERS, holdings:HOLDINGS});
     const [colors, setColors] = useState(COLORS);
     const [timer, setTimer] = useState(null);
+
+    useEffect(() => {
+        setSetup({
+            duration : DURATION,
+            n_traders : TRADERS,
+            max_quantity : MAX_QUANTITY,
+            max_price : MAX_PRICE,
+            holdings : HOLDINGS,
+            timeExtent:getTimeExtent(DURATION)
+        })
+    }, [DURATION])
  
     useEffect(() => {
         if (sessionState){
@@ -255,7 +266,6 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS, HOLDIN
             })
             worker.addEventListener("message", ({ data }) => {
                 setWorkerResponse(data)
-                console.log("worker response =>",data)
             });
             traders.push({id : ids, quantity : 0, price: 0, transactions: 0, holdings : setup["holdings"]});
             workers.push(worker);
