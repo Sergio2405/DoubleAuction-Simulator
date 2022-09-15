@@ -9,14 +9,13 @@ HOST = "localhost"
 PORT = 8001
 
 async def exchange(websocket):
-
-    market = Market()
     
     async for message in websocket:
 
         message = json.loads(message)
         
         if message["setup"]: 
+            market = Market()
             setup = message["setup"]
             market.setupMarket(duration = setup["duration"])
             response = {"log": "Market is open", "time": datetime.now().strftime('%H:%M:%S.%f')}

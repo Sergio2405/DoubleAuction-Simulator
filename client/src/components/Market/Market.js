@@ -16,6 +16,17 @@ const INITIAL_MARKET_STATISTICS = {
     asks : {variable:"Asks", mean:0, deviation:0, max:0, min:0},
 }
 
+function shuffle(array) {
+    let currentIndex = array.length,  randomIndex;
+    while (currentIndex != 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    };
+    return array;
+  }
+
 function getTimeExtent(duration){
     let start_time = new Date();
     let start_aux = new Date();
@@ -31,7 +42,7 @@ function getStandardDeviation(array, mean) {
     return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b,0) / array.length)
   }
 
-function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS, HOLDINGS }) {
+function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS, HOLDINGS, COLORS }) {
     const [logs, setLogs] = useState([INITIAL_LOGS]);
     const [traders, setTraders] = useState([INITIAL_TRADERS]);
     const [adminOrders, setAdminOrders] = useState([INITIAL_ADMIN_ORDERS]);  
@@ -48,6 +59,7 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS, HOLDIN
     const [websocket, setWebsocket] = useState(null);
 
     const [setup, setSetup] = useState({duration: DURATION, timeExtent:getTimeExtent(DURATION), max_price: MAX_PRICE, max_quantity: MAX_QUANTITY, n_traders: TRADERS, holdings:HOLDINGS});
+    const [colors, setColors] = useState(COLORS);
     const [timer, setTimer] = useState(null);
  
     useEffect(() => {
@@ -152,6 +164,30 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS, HOLDIN
             workers_temp[response["limit_issuer"]] = limit_issuer;
             workers_temp[response["market_issuer"]] = market_issuer;
 
+            // updating workers status 
+            let worker_limit;
+            let worker_market;
+            if (response["limit_issuer"] == traders.length - 1){
+                worker_market = workers[response["market_issuer"]];
+                worker_market.postMessage({
+                    holdings : market_issuer["holdings"]
+                });
+            }else if (response["market_issuer"] == traders.length - 1){
+                worker_limit = workers[response["limit_issuer"]];
+                worker_limit.postMessage({
+                    holdings : limit_issuer["holdings"]
+                });
+            }else{
+                worker_limit = workers[response["limit_issuer"]];
+                worker_market = workers[response["market_issuer"]];
+                worker_limit.postMessage({
+                    holdings : limit_issuer["holdings"]
+                });
+                worker_market.postMessage({
+                    holdings : market_issuer["holdings"]
+                });
+            };
+
             setTraders(workers_temp);
 
             // quantity statistics
@@ -180,7 +216,6 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS, HOLDIN
                 if (response["log"].includes("closed")){
                     setSessionState(!sessionState);
                 };
-
                 setLogs(prevLogs => [{
                     "time": response["time"],
                     "log" : response["log"]
@@ -215,10 +250,12 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS, HOLDIN
                 id : ids,
                 price : setup["max_price"],
                 quantity : setup["max_quantity"],
+                holdings : setup["holdings"],
                 status : "start"
             })
             worker.addEventListener("message", ({ data }) => {
                 setWorkerResponse(data)
+                console.log("worker response =>",data)
             });
             traders.push({id : ids, quantity : 0, price: 0, transactions: 0, holdings : setup["holdings"]});
             workers.push(worker);
@@ -240,6 +277,8 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS, HOLDIN
 
             setLimitOrders([]);
             setTransactions([]);
+
+            setColors(shuffle(colors));
 
             let setup_ = setup;
             setup_["timeExtent"] = getTimeExtent(setup_["duration"]) 
@@ -285,12 +324,15 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS, HOLDIN
                 <Table 
                     title = "Orders Placed" 
                     headers = {["id","quantity","price","action"]} 
-                    cellColors = {{action:{buy:"crimson", sell:"steelblue"}}}
+                    cellColors = {{
+                        id : colors,
+                        action : {buy:"crimson", sell:"steelblue"}}}
                     data = {limitOrders}
                 />
                 <Table 
                     title = "Trader Statistics" 
                     headers = {["id","quantity","price","transactions","holdings"]} 
+                    cellColors = {{id : colors}}
                     data = {traders}
                 />
                 <Serie 

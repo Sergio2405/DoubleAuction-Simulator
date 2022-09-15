@@ -1,6 +1,6 @@
 import React , { useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import Market from './components/App/Market'
+import Market from './components/Market/Market'
 
 import './index.scss'
 
@@ -60,6 +60,7 @@ function App() {
         MAX_QUANTITY = {setup["max_quantity"]}
         TRADERS = {setup["n_traders"]}
         HOLDINGS = {setup["holdings"]}
+        COLORS = {["yellow", "green","gray", "brown", "orange"]}
       />
     </div>
   );
