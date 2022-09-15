@@ -2,7 +2,7 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). -->
 
-## Double-Auction Simulator (Currently in Development)
+## Double-Auction Simulator (Development version)
 
 Project that consists on simulating a double auction market using React (client side) and Python (server side).
 
