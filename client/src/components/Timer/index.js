@@ -28,7 +28,7 @@ const Timer = ({ duration, active }) => {
 
     return (
         <div className = "timer">
-            <label>Time Left (seconds) </label>
+            <label>Time Left (seconds) </label>    
             <button ref = {timer} type = "button">{seconds ? seconds : duration}</button>
         </div>
     )

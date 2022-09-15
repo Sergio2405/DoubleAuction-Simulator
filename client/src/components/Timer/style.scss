@@ -1,8 +1,14 @@
 .timer {
     display: flex; 
     flex-direction: row;
+    align-items:center;
+    column-gap:5px;
+    margin-top:-5px;
 
     button {
-        background-color: rgb(4, 201, 4);
+        height:30px;
+        text-align:center;
+        width:50px;
+        box-shadow: 1px 1px #666;
     }
 }

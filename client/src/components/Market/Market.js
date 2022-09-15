@@ -119,7 +119,7 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS, HOLDIN
                         market_stats["asks"]["min"] = Math.min(...limit_list);
                         market_stats["asks"]["deviation"] = getStandardDeviation(limit_list, mean)
                     }
-                    setLimitOrders(prevLimitOrders => [...prevLimitOrders,limit]); 
+                    setLimitOrders(prevLimitOrders => [limit,...prevLimitOrders]); 
                     setMarketStatistics(market_stats)
                 }
                 order = JSON.stringify(order);
@@ -349,6 +349,7 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS, HOLDIN
                 <TwoWay 
                     title = "Bids and Asks" 
                     labels = {{xAxis: "QUANTITY", yAxis : "PRICE"}}
+                    curveColors = {["steelblue", "crimson"]}
                     axis = {setup ? {xAxis: setup["max_quantity"] , yAxis : setup["max_price"] + 10} : {xAxis:50, yAxis:50}}
                     data = {limitOrders}
                 />

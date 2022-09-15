@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 
 import '../style.scss'
 
-function TwoWay({ title , labels, axis, data }){
+function TwoWay({ title , labels, curveColors, axis, data }){
     const ref = useD3((svg) => {
           const height = 330;
           const width = 500;
@@ -46,21 +46,21 @@ function TwoWay({ title , labels, axis, data }){
                     .y(d => y(d.price))
                     .curve(d3.curveStep)
     
-          svg.select(".supply")
+          svg.select(".firstCurve")
             .datum(data.filter(obs => obs.curve == "supply")
                        .sort((obs1,obs2) => d3.ascending(obs1.quantity, obs2.quantity)))
             .attr("d", line)
             .attr("fill","none")
-            .attr("stroke", "steelblue")
+            .attr("stroke", curveColors[0])
             .attr("stroke-width", "1.5")
             .attr("stroke-miterlimit", "1")
 
-          svg.select(".demand")
+          svg.select(".secondCurve")
           .datum(data.filter(obs => obs.curve == "demand")
                       .sort((obs1,obs2) => d3.ascending(obs1.quantity, obs2.quantity)))
           .attr("d", line)
           .attr("fill","none")
-          .attr("stroke", "crimson")
+          .attr("stroke", curveColors[1])
           .attr("stroke-width", "1.5")
           .attr("stroke-miterlimit", "1")
         },
@@ -71,13 +71,13 @@ function TwoWay({ title , labels, axis, data }){
           <div className = "caption">{title}</div>
           <div className = "legend">
             <div>Bids</div>
-            <div style = {{backgroundColor: "crimson"}}></div>
+            <div style = {{backgroundColor: curveColors[1]}}></div>
             <div>Asks</div>
-            <div style = {{backgroundColor: "steelblue"}}></div>
+            <div style = {{backgroundColor: curveColors[0]}}></div>
           </div>
           <svg ref={ref}>
-            <path className = "supply"/>
-            <path className = "demand"/>
+            <path className = "firstCurve"/>
+            <path className = "secondCurve"/>
             <g className="x-axis">
               <text>{labels["xAxis"]}</text>  
             </g>
