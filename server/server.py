@@ -4,9 +4,23 @@ import json
 from datetime import timedelta, datetime
 import logging
 from market import Market
+from fastapi import FastAPI, WebSocket 
 
 HOST = "localhost" 
 PORT = 8001
+
+app = FastAPI()
+
+@app.get("/")
+async def connected():
+    return "Hello from the server"
+
+@app.websocket("/ws")
+async def websocket_server(websocket:WebSocket):
+    await websocket.accept()
+    while True:
+        data = await websocket.receive_text()
+        await websocket.end_text(f"Message has been received: {data}")
 
 async def exchange(websocket):
     
