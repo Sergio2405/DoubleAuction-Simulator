@@ -1,10 +1,12 @@
 from collections import deque
 from datetime import timedelta, datetime
+import secrets
 
 class Market(): 
 
     def __init__(self): 
-        self.buy_limit_orders = deque()
+        self.id = None
+        self.buy_limit_ordersname = deque()
         self.sell_limit_orders = deque()
         self.transactions = 0
         self.volume = 0
@@ -15,11 +17,16 @@ class Market():
     def emptyMarket(self, order):
         return len(self.sell_limit_orders) == 0 if order["action"] == "buy" else len(self.buy_limit_orders) == 0
 
+    def generateMarketId(self):
+        chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        key = "".join(secrets.choice(chars) for _ in range(5))
+        return key
+
     def setupMarket(self, duration):
         self.duration = datetime.now() + timedelta(seconds = duration)
+        self.id = self.generateMarketId()
 
     def addOrder(self, order):
-
         if order["action"] == "buy":
             self.buy_limit_orders.append(order)
         else:

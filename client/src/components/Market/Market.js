@@ -76,7 +76,7 @@ function Market({ HOST, PORT, DURATION, MAX_PRICE, MAX_QUANTITY, TRADERS, HOLDIN
     useEffect(() => {
         if (sessionState){
             console.log('[STARTING WEBSOCKET]')
-            const ws = new WebSocket(`ws://${HOST}:${PORT}/`);
+            const ws = new WebSocket(`ws://${HOST}:${PORT}/market_socket`);
             const setup_ = setup;
             ws.addEventListener("open", function(){
                 createWorkers(parseInt(setup_["n_traders"]));

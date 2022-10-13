@@ -1,13 +1,10 @@
-import asyncio
-import websockets
-import json
-from datetime import timedelta, datetime
+from datetime import datetime
 import logging
 from market import Market
 from fastapi import FastAPI, WebSocket 
 
-HOST = "localhost" 
-PORT = 8001
+#HOST = "localhost" 
+#PORT = 8001
 
 app = FastAPI()
 
@@ -22,7 +19,7 @@ async def market_server(websocket:WebSocket):
         message = await websocket.receive_json()
         
         if message["setup"]: 
-            market = Market()
+            global market = Market()
             setup = message["setup"]
             market.setupMarket(duration = setup["duration"])
             response = {"log": "Market is open", "time": datetime.now().strftime('%H:%M:%S.%f')}
@@ -45,11 +42,8 @@ async def market_server(websocket:WebSocket):
                 await websocket.close()
        
         await websocket.send_json({"log":"Message has been received"})
+        
+@app.post("/save_database")
+async def save_database(database_name:str):
+    pass
 
-#async def market():
-#    print("[SERVER UP]")
-#    async with websockets.serve(exchange, HOST, PORT):
-#        await asyncio.Future() 
-
-if __name__ == "__main__":
-    asyncio.run(market())
