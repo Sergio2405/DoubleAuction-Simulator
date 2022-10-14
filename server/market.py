@@ -6,7 +6,7 @@ class Market():
 
     def __init__(self): 
         self.id = None
-        self.buy_limit_ordersname = deque()
+        self.buy_limit_orders = deque()
         self.sell_limit_orders = deque()
         self.transactions = 0
         self.volume = 0

@@ -6,3 +6,5 @@ package.json
 public/
 
 server/__pycache__
+
+*.db

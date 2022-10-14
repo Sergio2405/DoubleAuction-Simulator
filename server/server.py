@@ -1,12 +1,23 @@
 from datetime import datetime
 import logging
-from market import Market
-from fastapi import FastAPI, WebSocket 
+from fastapi import Depends, FastAPI, WebSocket 
 
-#HOST = "localhost" 
-#PORT = 8001
+from sqlalchemy.orm import Session
+
+import models
+from database import SessionLocal, engine
+from market import Market
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 @app.get("/")
 async def connected():
@@ -15,11 +26,13 @@ async def connected():
 @app.websocket("/market_socket")
 async def market_server(websocket:WebSocket):
     await websocket.accept()
+    print("Hola desde socket")
     while True:
         message = await websocket.receive_json()
         
         if message["setup"]: 
-            global market = Market()
+            global market
+            market = Market()
             setup = message["setup"]
             market.setupMarket(duration = setup["duration"])
             response = {"log": "Market is open", "time": datetime.now().strftime('%H:%M:%S.%f')}
@@ -44,6 +57,6 @@ async def market_server(websocket:WebSocket):
         await websocket.send_json({"log":"Message has been received"})
         
 @app.post("/save_database")
-async def save_database(database_name:str):
-    pass
+async def save_database(database_name:str,db: Session = Depends(get_db)):
+    return "Received " + database_name 
 
