@@ -1,26 +1,25 @@
 from datetime import datetime
-import logging
 from fastapi import Depends, FastAPI, WebSocket 
-
 from sqlalchemy.orm import Session
 
 import models
-from database import SessionLocal, engine
+from database import engine, Db 
 from market import Market
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+#def get_db():
+#    db = SessionLocal()
+#    try:
+#        yield db
+#    finally:
+#        db.close()
 
 @app.get("/")
 async def connected():
+    #await Db.connect()
     return "Hello from the server"
 
 @app.websocket("/market_socket")
@@ -53,8 +52,9 @@ async def market_server(websocket:WebSocket):
                 await websocket.send_json(response)
                 print("Market is Closed!")
                 await websocket.close()
+                #await Db.disconnect()
        
-        await websocket.send_json({"log":"Message has been received"})
+        #await websocket.send_json({"log":"Message has been received"})
         
 @app.post("/save_database")
 async def save_database(database_name:str,db: Session = Depends(get_db)):
