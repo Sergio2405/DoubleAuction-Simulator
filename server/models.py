@@ -20,11 +20,12 @@ class Transaction(Base):
     __tablename__ = "transactions"
     
     id = Column(Integer, primary_key=True, index=True)
+    limit_issuer = Column(Integer)
+    market_issuer = Column(Integer)
     action = Column(String, default="")
-    issuer = Column(Integer)
-    receiver = Column(Integer)
-    price = Column(Float,default=0)
     volume = Column(Integer, default=0)
+    price = Column(Float,default=0)
+    order_id = Column(Integer,default=0)
     market_id = Column(String,ForeignKey("markets.id"))
 
     market = relationship("Market", back_populates="transactions")

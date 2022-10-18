@@ -13,6 +13,7 @@ class Market():
         self.market_orders = 0
         self.limit_orders = 0
         self.duration = None
+        self.__statistics = {"mean_price"}
 
     def emptyMarket(self, order):
         return len(self.sell_limit_orders) == 0 if order["action"] == "buy" else len(self.buy_limit_orders) == 0
@@ -25,6 +26,12 @@ class Market():
     def setupMarket(self, duration):
         self.duration = datetime.now() + timedelta(seconds = duration)
         self.id = self.generateMarketId()
+
+    def setStatistics(self,statistics):
+        self.statistics = statistics
+        
+    def getStatistics(self):
+        return self.statistics
 
     def addOrder(self, order):
         if order["action"] == "buy":
@@ -97,7 +104,7 @@ class Market():
                 "action" : action,
                 "volume" : quantity_match,
                 "price" : price_match,
-                "order_id" : offer,
+                "order_id" : self.market_orders,
                 "log" : f"Trader {limit_issuer} | {action} | Trader {market_issuer} | {quantity_match} at {price_match}",
                 "description" : "exchange"
             }
@@ -110,7 +117,8 @@ class Market():
         else: 
 
             return {
-                "log" : "No limit orders placed"
+                "log" : "No limit orders placed",
+                "description": "No Order"
             }
 
         self.market_orders += 1
