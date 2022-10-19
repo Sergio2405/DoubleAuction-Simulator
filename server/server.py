@@ -50,7 +50,8 @@ async def market_server(websocket:WebSocket, db:Session=Depends(get_db)):
                     if response_copy["description"]!="No Order":
                         del response_copy["log"]
                         del response_copy["description"]
-
+                        del response_copy["id"]
+                        
                         db_transaction = models.Transaction(**response_copy,market_id=market.id)
                         db.add(db_transaction)
                         db.commit()
@@ -75,7 +76,7 @@ async def market_server(websocket:WebSocket, db:Session=Depends(get_db)):
                 #    setattr(db_market,statistic,statistics[statistic]) 
                 #db.commit()
                 await websocket.close()
-       
+                break 
 @app.post("/save_db")
 async def save_db(database_name:str, db: Session = Depends(get_db)):
     return "Received " + database_name 

@@ -19,7 +19,7 @@ class Market(Base):
 class Transaction(Base):
     __tablename__ = "transactions"
     
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer,primary_key=True, autoincrement=True)
     limit_issuer = Column(Integer)
     market_issuer = Column(Integer)
     action = Column(String, default="")
